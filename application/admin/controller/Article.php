@@ -17,25 +17,47 @@ class Article extends Controller
     }
     public function edit($id)
     {
-        $barname=ArticleModel::get($id)->toArray();
-        $this->assign('barname',$barname);
+        $banner = BannerModel::all(function($query){
+                $query->where("id","<",5)
+                   ->whereOr("id",">",5)
+                ;
+            });
+        $bannerArr=[];
+        foreach ($banner as $key => $value) {
+            array_push($bannerArr, $value->toArray());
+        }
+        // dump($bannerArr);
+        // exit();
+        $this->assign('bannerArr',$bannerArr);
+
+        $article=Db::view('article',"*")
+            ->view('banner','name','article.banner_id=banner.id')
+            ->where('article.id','=',$id)
+            ->select();
+        $article[0]['content']=htmlspecialchars_decode($article[0]['content']);
+        $this->assign('article',$article[0]);
         return view();
     }
     public function update()
     {
-        $article_name=$_POST['barname'];
+        $title=$_POST['title'];
         $article_id=$_POST['id'];
+        $banner_id=$_POST['banner_id'];
+        $content=addslashes(htmlspecialchars($_POST['content']));
+        $time=time();
         $article=new ArticleModel();
-        $res=ArticleModel::get(["name"=>$article_name]);
-        if($res){
-            echo '<script>alert("该栏目已存在");history.go(-2)</script>';
-        }else{
-            $res=$article->save(
+        $res=$article->save(
                 [
-                  "name"=>$article_name
+                  "title"=>$title,
+                  "time"=>$time,
+                  "banner_id"=>$banner_id,
+                  "content"=>$content
                 ],["id"=>$article_id]
             );
-           $this->redirect('index');            
+        if($res){
+            $this->redirect('index');
+        }else{
+            echo "<script>alert('文章修改失败！')</script>";
         }
     }
     public function delete($id)

@@ -27,33 +27,20 @@
   <div class="row">
     <div class="col-sm-10 col-md-11 col-lg-11 col-sm-offset-1 main" id="main">
       <div class="row">
-        <form action="{:url('update')}" method="post" class="add-article-form">
+        <form action="{:url('insert')}" method="post" class="add-article-form">
          <div class="col-md-9">
-            <h1 class="page-header">内容添加</h1>
+            <h1 class="page-header">今日推荐</h1>
             <div class="form-group">
               <label for="article-title" class="sr-only">标题</label>
-              <input type="text" id="article-title" name="title" class="form-control"  required autofocus autocomplete="off" placeholder='请输入标题' value="{$article['title']}"/>
-               <input type="hidden" name="id" value="{$article['id']}"/>
-            </div>
-             <div class="form-group">
-	            <select name="banner_id">
-	                {volist name="bannerArr" id="val"}
-		              	 {if condition="$val.id == $article['banner_id']"}
-		              	   <option value="{$val.id}" selected>{$val.name}</option>
-		              	   {else/}
-		              	     <option value="{$val.id}">{$val.name}</option>
-		              	 {/if}
-	              	{/volist}
-	            </select>
-            </div>
+              <input type="text" id="article-title" name="title" class="form-control" placeholder="在此处输入标题"  required autofocus autocomplete="off">
+            </div>           
             <div class="form-group">
               <label for="article-content" class="sr-only">内容</label>
-              <script id="article-content" name="content" type="text/plain"> {$article['content']}</script>
+              <script id="article-content" name="content" type="text/plain"></script>
             </div>
-            <div class="form-group">
-              <input type="submit" class="btn btn-primary" value="修改">
-              <input type="reset" class='btn btn-danger'>
-            </div>
+             <div class="add-article-box-footer">
+                <button class="btn btn-primary" type="submit" name="submit">发布</button>
+             </div>
           </div>
         </form>
       </div>
