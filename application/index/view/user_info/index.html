@@ -1,0 +1,453 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZHM博客</title>
+<link href="https://cdn.bootcss.com/cropper/3.1.3/cropper.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="__STATIC__/public/bs/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="__STATIC__/public/bs/css/nprogress.css">
+<link rel="stylesheet" type="text/css" href="__STATIC__/public/bs/css/style.css">
+<link rel="stylesheet" type="text/css" href="__STATIC__/public/bs/css/font-awesome.min.css">
+<link rel="apple-touch-icon-precomposed" href="__STATIC__/public/bs/images/icon/icon.png">
+<link rel="shortcut icon" href="__STATIC__/public/bs/images/icon/favicon.ico">
+<script src="__STATIC__/public/bs/js/jquery-2.1.4.min.js"></script>
+<script src="__STATIC__/public/bs/js/nprogress.js"></script>
+<script src="__STATIC__/public/bs/js/jquery.lazyload.min.js"></script>
+<!--[if gte IE 9]>
+  <script src="js/jquery-1.11.1.min.js" type="text/javascript"></script>
+  <script src="js/html5shiv.min.js" type="text/javascript"></script>
+  <script src="js/respond.min.js" type="text/javascript"></script>
+  <script src="js/selectivizr-min.js" type="text/javascript"></script>
+<![endif]-->
+<!--[if lt IE 9]>
+  <script>window.location.href='upgrade-browser.html';</script>
+<![endif]-->
+<style>
+.title{
+  text-align: center;
+  color: #999;
+}
+.headimg{
+  margin:0 auto;
+}
+.head{
+  width: 50px;
+  height:50px;
+  border-radius: 50%
+}
+*{
+  cursor: pointer;
+}
+
+
+#photo {
+        max-width:100%;
+        max-height:350px;
+    }
+    .img-preview-box {
+        text-align: center;
+    }
+    .img-preview-box > div {
+        display: inline-block;;
+        margin-right: 10px;
+    }
+    .img-preview {
+        overflow: hidden;
+    }
+    .img-preview-box .img-preview-lg {
+        width: 150px;
+        height: 150px;
+    }
+    .img-preview-box .img-preview-md {
+        width: 100px;
+        height: 100px;
+    }
+    .img-preview-box .img-preview-sm {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+
+
+
+#mo{
+  display: none;/*隐藏*/
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.7);
+  top: 0px;
+  left: 0px;
+  z-index: 7;
+ }
+ #moimg{
+  display: block;
+  margin:5% auto;
+  width: 50%;
+  max-width: 750px;
+  height: 70%;
+ }
+ #caption{
+  text-align: center;
+  margin: 15px auto;
+  width: 60%;
+  max-height: 750px;
+  font-size: 20px;
+  color:#ccc;
+ }
+ #moimg,#caption{
+  -webkit-animation: first 1s;
+  -o-animation: first 1s;
+  animation: first 1s;
+ }
+ @keyframes first{
+  from{transform: scale(0.1);}
+  to{transform: scale(1);}
+ }
+ .close{
+  font-size: 40px;
+  font-weight: bold;
+  position: absolute;
+  top: 20px;
+  right: 14%;
+  color:#f1f1f1;
+ }
+ .close:hover,
+ .close:focus{
+  color:#bbb;
+  cursor:pointer;
+ }
+ @media only screen and(max-width:750px ) {
+  #moimg{
+   width: 100%;
+  }
+ }
+</style>
+</head>
+<body class="user-select">
+<header class="header">
+  <nav class="navbar navbar-default" id="navbar">
+    <div class="container">
+      <div class="header-topbar link-border">
+        <ul class="site-nav hidden-xs topmenu">
+          <li><a href="tags.html">标签云</a></li>
+          <li><a href="readers.html" rel="nofollow">读者墙</a></li>
+          <li><a href="links.html" rel="nofollow">友情链接</a></li>
+          <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" rel="nofollow">关注本站 <span class="caret"></span></a>
+            <ul class="dropdown-menu header-topbar-dropdown-menu">
+              <li><a data-toggle="modal" data-target="#WeChat" rel="nofollow"><i class="fa fa-weixin"></i> 微信</a></li>
+              <li><a href="#" rel="nofollow"><i class="fa fa-weibo"></i> 微博</a></li>
+              <li><a data-toggle="modal" data-target="#areDeveloping" rel="nofollow"><i class="fa fa-rss"></i> RSS</a></li>
+            </ul>
+          </li>
+        </ul>
+        
+       
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#header-navbar" aria-expanded="false"> <span class="sr-only"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+        <h1 class="logo hvr-bounce-in"><a href="../index/index" title=""><img src="__STATIC__/public/bs/images/logo.png" alt=""></a></h1>
+      </div>
+      <div class="collapse navbar-collapse" id="header-navbar">
+        <ul class="nav navbar-nav navbar-right">
+          <li class="hidden-index"><a data-cont="平台首页" href="../index.php">平台首页</a></li>
+          
+        </ul>
+        <form class="navbar-form visible-xs" action="../index.php" method="post">
+          <div class="input-group">
+            <input type="text" name="keyword" class="form-control" placeholder="请输入关键字" maxlength="20" autocomplete="off">
+            <span class="input-group-btn">
+            <button class="btn btn-default btn-search" name="search" type="submit">搜索</button>
+            </span> 
+          </div>
+        </form>
+      </div>
+    </div>
+  </nav>
+ </header>
+<body>
+<section class="container">
+  <div class="content-wrap">
+    <div class="content">
+  <article class='article'>
+    <section class="container-fluid">
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-12 main" id="main">
+            <div class="row">              
+              <form action="{:url('update')}" method='post' enctype='multipart/form-data' class="add-article-form">
+                <div class="col-md-12" style='text-align: center;'>
+                  <h1 class="page-header">个人中心</h1>                  
+                 <div class="headimg">
+                       <a title=""><img class="thumb" style="width: 120px;height: 120px;border-radius: 50%" alt="" src="__STATIC__/{$userInfo['img']}" id="user-photo"></a>
+                       <p style="margin-top:20px"></p>
+                        <!-- <label for="">更改头像:</label>       -->
+                        <!-- <button type="button" class="btn btn-primary"  data-target="#changeModal" data-toggle="modal">头像修改</button> -->
+                        <!-- <input type="file" name="img" id="" style='margin:8px 40%;'> -->
+                 </div>     
+                 <div class="modal fade" id="changeModal" tabindex="-1" role="dialog" aria-hidden="true">
+                  <div class="modal-dialog">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                              <h4 class="modal-title text-primary">
+                              <i class="fa fa-pencil"></i>
+                                          更换头像
+                              </h4>
+                          </div>
+                          <div class="modal-body">
+                              <p class="tip-info text-center">
+                                  未选择图片
+                              </p>
+                              <div class="img-container hidden">
+                                  <img src="" alt="" id="photo">
+                              </div>
+                              <div class="img-preview-box hidden">
+                                  <hr>
+                                  <span>150*150:</span>
+                                  <div class="img-preview img-preview-lg">
+                                  </div>
+                                  <span>100*100:</span>
+                                  <div class="img-preview img-preview-md">
+                                  </div>
+                                  <span>30*30:</span>
+                                  <div class="img-preview img-preview-sm">
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="modal-footer">
+                              <label class="btn btn-danger pull-left" for="photoInput">
+                              <input type="file" name="img" class="sr-only" id="photoInput" accept="image/*">
+                              <span>打开图片</span>
+                              </label>
+                              <button type="button" class="btn btn-primary disabled" disabled="true" onclick="sendPhoto();">提交</button>
+                              <button type="button" class="btn btn-close" aria-hidden="true" data-dismiss="modal">取消</button>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+                 <!-- 头像模态框 -->
+                 <div class="motai" id="mo">
+                   <span class="close" id="close">×</span>
+                   <img class="motaiimg" id="moimg">                   
+                   <div id="caption"></div>
+                   <button type="button" class="btn btn-primary"  data-target="#changeModal" data-toggle="modal">头像修改</button>
+                 </div>
+
+                  <div class="form-group" style='width: 30%;margin:10px auto 0' >
+                    <label for="">用户名:</label>
+                    <input type="text" class="form-control" name='username' required autocomplete="off" value="{$userInfo['username']}">
+                  </div>
+                  <div class="form-group" style='width: 30%;margin:0 auto'>
+                    <label for="">密码:</label>
+                    <input type="password" class="form-control" name='password' required autocomplete="off" value="######">
+                  </div>                                          
+                  <div class="form-group" style='margin-top:20px;'>
+                    <input type="submit" class='btn btn-primary' value="提交">
+                    <input type="reset" class='btn btn-danger'>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </article>    
+  </div>
+  </div>  
+  <aside class="sidebar">
+    <div class="fixed">
+      <div class="widget widget-tabs">
+        <ul class="nav nav-tabs" role="tablist">
+          <li role="presentation" class="active"><a href="#notice" aria-controls="notice" role="tab" data-toggle="tab">网站公告</a></li>
+          <li role="presentation"><a href="#centre" aria-controls="centre" role="tab" data-toggle="tab">会员中心</a></li>
+          <li role="presentation"><a href="#contact" aria-controls="contact" role="tab" data-toggle="tab">联系站长</a></li>
+        </ul>
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane notice active" id="notice">
+            <ul>         
+              
+            </ul>
+          </div>
+          <div role="tabpanel" class="tab-pane centre" id="centre">
+            <h4>需要登录才能进入会员中心</h4>
+            <p> <a data-toggle="modal" data-target="#loginModal" class="btn btn-primary">立即登录</a> <a href="javascript:;" class="btn btn-default">现在注册</a> </p>
+          </div>
+          <div role="tabpanel" class="tab-pane contact" id="contact">
+            <h2>Email:<br />
+              <a href="mailto:4041812@qq.com" data-toggle="tooltip" data-placement="bottom" title="4041812@qq.com">4041812@qq.com</a></h2>
+          </div>
+        </div>
+      </div>
+      <div class="widget widget_search">
+        <form class="navbar-form" action="../index.php" method="post">
+          <div class="input-group">
+            <input type="text" name="keyword" class="form-control" size="35" placeholder="请输入关键字" maxlength="15" autocomplete="off">
+            <span class="input-group-btn">
+            <button class="btn btn-default btn-search" name="search" type="submit">搜索</button>
+            </span> </div>
+        </form>
+      </div>
+    </div>
+    <div class="widget widget_sentence">
+      <h3>每日一句</h3>
+      <div class="widget-sentence-content">
+        <h4></h4>
+        <p style="line-height: 22px"></p>
+      </div>
+    </div>
+    <div class="widget widget_hot">
+      <h3>热门文章</h3>
+      <ul>
+       
+        <li><a href='../index.php?'><span class="thumbnail"><img class="thumb" data-original="images/excerpt.jpg" alt=""></span><span class="text"> </span><span class="muted" style="display: block;line-height: 30px"><i class="glyphicon glyphicon-time"></i> </span><span class="muted"><i class="glyphicon glyphicon-eye-open"></i> </span><span class="muted"><i class="glyphicon glyphicon-comment"></i> </span></a></li>
+ 
+      </ul>
+    </div>
+  </aside>
+</section>
+<footer class="footer">
+  <div class="container">
+    <p>&copy; 2016 <a href="">ylsat.com</a> &nbsp; <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">豫ICP备20151109-1</a> &nbsp; <a href="sitemap.xml" target="_blank" class="sitemap">网站地图</a></p>
+  </div>
+  <div id="gotop"><a class="gotop"></a></div>
+</footer>
+
+<!-- 公告模态 -->
+<div id="noticeModal" class='modal fade'>
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <div class="close" data-dismiss='modal'>&times;</div>
+            <h3>网站公告</h3>    
+          </div>
+          <div class="modal-body">
+            <div class="tab-content">
+            <div role="tabpanel" class="tab-pane notice active" id="notice">
+            <ul>            
+            <li style='color:#999999;list-style: binary;margin-left:10px'>                
+                <p style='color:#999999;width:520px;'></p>
+                <p style='text-align:right'></p>
+                </li> 
+              
+            </ul>
+          </div>
+          </div>
+          <div class="modal-footer">
+            <button class='btn btn-primary' data-dismiss='modal'>我知道了</button>          </div>
+        </div>
+      </div>  
+</div>
+<script src="https://cdn.bootcss.com/cropper/3.1.3/cropper.min.js"></script>
+<script src="__STATIC__/public/bs/js/bootstrap.min.js"></script> 
+<script src="__STATIC__/public/bs/js/jquery.ias.js"></script> 
+<script src="__STATIC__/public/bs/js/scripts.js"></script>
+    <script>
+     var initCropperInModal = function(img, input, modal){
+            var $image = img;
+            var $inputImage = input;
+            var $modal = modal;
+            var options = {
+                aspectRatio: 1, // 纵横比
+                viewMode: 2,
+                preview: '.img-preview' // 预览图的class名
+            };
+            // 模态框隐藏后需要保存的数据对象
+            var saveData = {};
+            var URL = window.URL || window.webkitURL;
+            var blobURL;
+            $modal.on('show.bs.modal',function () {
+                // 如果打开模态框时没有选择文件就点击“打开图片”按钮
+                if(!$inputImage.val()){
+                    $inputImage.click();
+                }
+            }).on('shown.bs.modal', function () {
+                // 重新创建
+                $image.cropper( $.extend(options, {
+                    ready: function () {
+                        // 当剪切界面就绪后，恢复数据
+                        if(saveData.canvasData){
+                            $image.cropper('setCanvasData', saveData.canvasData);
+                            $image.cropper('setCropBoxData', saveData.cropBoxData);
+                        }
+                    }
+                }));
+            }).on('hidden.bs.modal', function () {
+                // 保存相关数据
+                saveData.cropBoxData = $image.cropper('getCropBoxData');
+                saveData.canvasData = $image.cropper('getCanvasData');
+                // 销毁并将图片保存在img标签
+                $image.cropper('destroy').attr('src',blobURL);
+            });
+            if (URL) {
+                $inputImage.change(function() {
+                    var files = this.files;
+                    var file;
+                    if (!$image.data('cropper')) {
+                        return;
+                    }
+                    if (files && files.length) {
+                        file = files[0];
+                        if (/^image\/\w+$/.test(file.type)) {
+
+                            if(blobURL) {
+                                URL.revokeObjectURL(blobURL);
+                            }
+                            blobURL = URL.createObjectURL(file);
+
+                            // 重置cropper，将图像替换
+                            $image.cropper('reset').cropper('replace', blobURL);
+
+                            // 选择文件后，显示和隐藏相关内容
+                            $('.img-container').removeClass('hidden');
+                            $('.img-preview-box').removeClass('hidden');
+                            $('#changeModal .disabled').removeAttr('disabled').removeClass('disabled');
+                            $('#changeModal .tip-info').addClass('hidden');
+
+                        } else {
+                            window.alert('请选择一个图像文件！');
+                        }
+                    }
+                });
+            } else {
+                $inputImage.prop('disabled', true).addClass('disabled');
+            }
+        }
+  
+
+    var sendPhoto = function(){
+        $('#photo').cropper('getCroppedCanvas',{
+            width:300,
+            height:300
+        }).toBlob(function(blob){
+            // 转化为blob后更改src属性，隐藏模态框
+            $('#user-photo').attr('src',URL.createObjectURL(blob));
+            $('#changeModal').modal('hide');
+        });
+    }
+
+    $(function(){
+        initCropperInModal($('#photo'),$('#photoInput'),$('#changeModal'));
+    });
+
+    var motai=document.getElementById('mo')
+       var moimg=document.getElementById("moimg")
+       var realimg=document.getElementById("user-photo")
+       var caption=document.getElementById("caption")
+       realimg.onclick=function(){
+        motai.style.display="block"
+        moimg.src=this.src
+        caption.innerHTML=this.alt
+       }
+       var span=document.getElementById("close");
+       span.onclick=function(){
+        $('#motai').hide(1000);        
+       }
+       motai.onclick=function(){
+        $('#mo').hide();
+       }
+    </script>
+</body>
+</html>

@@ -59,7 +59,7 @@
         </ul>
         <div id="whetherLogin" style='margin-bottom: -10px'>
           {if condition="$Request.session.user_id"}
-             <h4>欢迎<a style='margin-left: 15px' href="{:url('userInfo/index')}" class="login username">{$Request.session.user_name}<img class='head' src="__STATIC__/{$Request.session.user_img}"></a><a style='margin-left: 15px' class="login" id='loginOut'> 退出</a></h4>             
+             <h4>欢迎<a style='margin-left: 15px' href='user/info.php' class="login">{$Request.session.user_name}<img class='head' src="__STATIC__/{$Request.session.user_img}"></a><a style='margin-left: 15px' class="login" id='loginOut'> 退出</a></h4>             
             {else/}
                 <a data-toggle="modal" data-target="#loginModal" class="login" rel="nofollow">Hi,请登录</a>&nbsp;&nbsp;<a href='#mymodal' data-toggle='modal' class="register" rel="nofollow">我要注册</a>&nbsp;&nbsp;<a data-target="#passModal" data-toggle='modal' rel="nofollow">找回密码</a>
           {/if}
@@ -145,8 +145,9 @@
               <div class="said">
                 <div></br>              
                   <input class="ipt form-control" type="text" name="conten" required autofocus autocomplete="off" />
-                  <input type="hidden" name="topic_id" value="{$value.id}"/>
-                  <input type="button" class="btn btn-primary" style="margin-top: 5px" value="提交评论" /> 
+                  <input type="hidden" name="topic_id" value=""/>
+                  <input type="button" class="btn btn-primary" style="margin-top: 5px" value="提交评论"  /> 
+                    
                 </div>
               </div>            
         </article>
@@ -288,7 +289,6 @@
             <label for="loginModalUserPwd">密码</label>
             <input type="password" class="form-control" id="loginModalUserPwd" placeholder="请输入密码" name="password" maxlength="18" autocomplete="off" required>
           </div>
-          <p style="color: red;" id="mesg"></p>
         </div>
         <div class="modal-footer">
                
@@ -374,6 +374,12 @@
   </ul>
 </div> -->
 <script src="__STATIC__/public/bs/js/jquery-2.1.4.min.js"></script>
+<script src="__STATIC__/public/bs/js/nprogress.js"></script>
+<script src="__STATIC__/public/bs/js/jquery.lazyload.min.js"></script>
+<script src="__STATIC__/public/bs/js/bootstrap.min.js"></script> 
+<script src="__STATIC__/public/bs/js/jquery.ias.js"></script> 
+<script src="__STATIC__/public/bs/js/scripts.js"></script>
+
 <script type="text/javascript">
   $(function(){
     $(window).scrollTop(0);
@@ -385,7 +391,7 @@
         index=$(this).index('.excerpt .user_comment .comment');
         oSaid.stop().hide(800);        
         oSaid.eq(index).stop().toggle(800);
-        oIput[index].focus();                
+        oIput[index].focus();        
       })
 
     if(!(document.getElementById('jmu'))){     
@@ -406,79 +412,63 @@
       if(event.keyCode == '13'){
         addComment($('.said .btn').eq(index))
         //console.log($('.said .btn').eq(index))
-      }      
+      }
     })
     $('.said .btn').click(function(){      
        addComment($(this))
        //console.log($(this))
     })   
     function addComment(_this){ 
-      if(!$('#whetherLogin .username').html()){
-          $('#loginModal').modal('show');
+      var a=_this.prev().val();
+      var b = _this.prevAll().filter(".ipt").val();
+      if(b==''){
+
       }else{
-        var a=_this.prev().val();
-        var b = _this.prevAll().filter(".ipt").val();
-        if(b==''){
+        $.ajax({
+          url: 'user/addcontent.php',
+          type:'POST',
+          data:{
+            'topic_id': a,
+            'conten':b
+          },
+          success:function(res){
+             var result=JSON.parse(res)
+             if(result.status==0){
+               var content = $('.userComment').eq(index).html();
+               // $('.userComment').eq(index).html(content+`<p><strong> ${$('.username').html()}: </strong> ${b}</p>`);
+               //es6 语法 手机端无法识别
+               $('.userComment').eq(index).html(content+"<p><strong> "+$('.username').html()+": </strong>"+ b +"</p>");
+               $('.commentTimes').eq(index*2).html(Number($('.commentTimes').eq(index*2).html())+1)
+               $('.commentTimes').eq(index*2+1).html(Number($('.commentTimes').eq(index*2+1).html())+1)
+               $('.articleView').eq(index).html(Number($('.articleView').eq(index).html())+1)
+               $('.ipt').val('')
+             }
+          }
 
-        }else{
-          $.ajax({
-            url: '../Comment/addComment',
-            type:'POST',
-            data:{
-              'topic_id': a,
-              'conten':b
-            },
-            success:function(res){
-               var result=JSON.parse(res)
-               if(result.status==0){
-                 var content = $('.userComment').eq(index).html();
-                 // $('.userComment').eq(index).html(content+`<p><strong> ${$('.username').html()}: </strong> ${b}</p>`);
-                 //es6 语法 手机端无法识别
-                 $('.userComment').eq(index).html(content+"<p><strong> "+$('.username').html()+": </strong>"+ b +"</p>");
-                 $('.commentTimes').eq(index*2).html(Number($('.commentTimes').eq(index*2).html())+1)
-                 $('.commentTimes').eq(index*2+1).html(Number($('.commentTimes').eq(index*2+1).html())+1)
-                 $('.articleView').eq(index).html(Number($('.articleView').eq(index).html())+1)
-                 $('.ipt').val('')
-               }
-            }
-
-          })     
-        }
-      }
+        })     
+      }     
+        
     }
     $('#loginBtn').click(function(){
       var username = $('#loginModalUserName').val();
-      var password = $('#loginModalUserPwd').val();      
-      if(username!=='' && password!==''){
-        $.ajax({
-            url: 'check',
-            type:'POST',
-            data:{
-              'username': username,
-              'password': password
-            },
-            success:function(res){
-               if(res['state']==1){
-                $('.close').click();
-                $('#whetherLogin').html("<h4>欢迎<a style='margin-left: 15px' href='{:url('userInfo/index')}' class='login username'>"+res['user_name']+"<img class='head' src='__STATIC__/"+res['user_img']+"'></a><a style='margin-left: 15px' class='login' id='loginOut'> 退出</a></h4>");
-               }else{
-                $('#mesg').html('用户名或密码错误');
-                $('#mesg').stop().fadeIn(700);
-                setTimeout(function(){            
-                  $('#mesg').stop().fadeOut(1000);
-                  $('#mesg').html('');              
-                },2000);              
-              }
-            }
-          })     
-      }else{
-        $('#mesg').html('用户名和密码不能为空');
-        $('#mesg').stop().fadeIn(700);
-        setTimeout(function(){            
-          $('#mesg').stop().fadeOut(1000);
-          $('#mesg').html('');              
-        },2000);
-      }
+      var password = $('#loginModalUserPwd').val();
+      $.ajax({
+          url: 'check',
+          type:'POST',
+          data:{
+            'username': username,
+            'password': password
+          },
+          success:function(res){
+             if(res['state']==1){
+              $('.close').click();
+              $('#whetherLogin').html("<h4>欢迎<a style='margin-left: 15px' href='user/info.php' class='login'>"+res['user_name']+"<img class='head' src='__STATIC__/"+res['user_img']+"'></a><a style='margin-left: 15px' class='login' id='loginOut'> 退出</a></h4>");
+             }else{
+              console.log('登录失败')
+             }
+          }
+
+        })
     })
     $('#whetherLogin').on('click','#loginOut',function(){
        cf=confirm('您确定退出吗?');
@@ -492,8 +482,8 @@
           },
           success:function(res){
             if(res){
-              $('#whetherLogin').html("<a data-toggle='modal' data-target='#loginModal' class='login' rel='nofollow'>Hi,请登录</a>&nbsp;&nbsp;<a href='#mymodal' data-toggle='modal' class='register' rel='nofollow'>我要注册</a>&nbsp;&nbsp;<a data-target='#passModal' data-toggle='modal' rel='nofollow'>找回密码</a>");    
-            }            
+              $('#whetherLogin').html("<a data-toggle='modal' data-target='#loginModal' class='login' rel='nofollow'>Hi,请登录</a>&nbsp;&nbsp;<a href='#mymodal' data-toggle='modal' class='register' rel='nofollow'>我要注册</a>&nbsp;&nbsp;<a data-target='#passModal' data-toggle='modal' rel='nofollow'>找回密码</a>");       
+            }
           }
 
         })
@@ -501,11 +491,6 @@
      })
 })
 </script>
-<script src="__STATIC__/public/bs/js/bootstrap.min.js"></script>
-<script src="__STATIC__/public/bs/js/jquery.lazyload.min.js"></script> 
-<script src="__STATIC__/public/bs/js/nprogress.js"></script>
-<script src="__STATIC__/public/bs/js/jquery.ias.js"></script> 
-<script src="__STATIC__/public/bs/js/scripts.js"></script>
 
 </body>
 </html>
