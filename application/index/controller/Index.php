@@ -12,83 +12,19 @@ use \app\index\model\User as UserModel;
 class Index extends Controller
 {
     public function index()
-    {
-    	//获取栏目标题
-        $banner = BannerModel::all();
-        $bannerArr=[];
-        foreach ($banner as $key => $value) {
-            array_push($bannerArr, $value->toArray());
-        }
-        $this->assign('bannerArr',$bannerArr);
-        
-        // 获取今日良言
-        $good_talk =GoodTalkModel::select(function($query){
-            $query-> limit(1)
-                ->order('id','desc');
-        });
-        $good_talkArr=[];
-        foreach ($good_talk as $key => $value) {
-            array_push($good_talkArr, $value->toArray());
-        }
-        $this->assign('good_talk',$good_talkArr[0]);
-        // dump($good_talkArr);
-        
-        // 网站公告
-        $notices = NoticeModel::all(function($query){
-            $query-> limit(5)
-                ->order('id','desc');
-        });
-        $noticeArr=[];
-        foreach ($notices as $key => $value) {
-            array_push($noticeArr, $value->toArray());
-        }
-        $this->assign('noticeArr',$noticeArr);
-        
-        //每日一句
-        $daily_talk = DailyTalkModel::all(function($query){
-            $query-> limit(1)
-                ->order('id','desc');
-        });
-        $daily_talkArr=[];
-        foreach ($daily_talk as $key => $value) {
-            array_push($daily_talkArr, $value->toArray());
-        }
-        $this->assign('daily_talkArr',$daily_talkArr[0]);
-        //文章和文章发布人信息
-        $articleArr=Db::view('article',"*")
-            ->view('banner','name','article.banner_id=banner.id')
-            ->view('user','img,username','user.id=article.user_id')
-            ->order('id','DESC')
-            ->select();
-
+    {    	
+        include 'public/article.php'; 
+        //文章和文章发布人信息        
+       $articleArr=Db::view('article',"*")
+        ->view('banner','name','article.banner_id=banner.id')
+        ->view('user','img,username','user.id=article.user_id')
+        ->order('id','DESC')
+        ->select();                
         $this->assign('articleArr',$articleArr);
-        // dump ($articleArr);
-        // exit;
-
-        $this->assign('articleArr',$articleArr);
-        //用户评论
-        $commentArr=Db::view('comment',"*")
-            ->view('article','time','article.id=comment.article_id')
-            ->view('user','username','user.id=comment.user_id')
-            ->select();
-        // dump ($commentArr);
-        // exit;
-        $this->assign('commentArr',$commentArr);
-
-        // 热门文章
-        $hotArticleArr=Db::view('article',"*")
-            ->view('banner','name','article.banner_id=banner.id')
-            ->view('user','img,username','user.id=article.user_id')
-            ->order('views','DESC')
-            ->order('comment_times','DESC')
-            ->limit(5)
-            ->select();
-        $this->assign('hotArticleArr',$hotArticleArr);
-        // dump($hotArticleArr);
-        // exit;
         return view();   
     }
     public function check () {
+    	Session::set('jum',1);
     	$name=$_POST['username'];
         $psw=md5($_POST['password']);
         $res=UserModel::get(["username"=>$name,"password"=>$psw]);
@@ -117,5 +53,14 @@ class Index extends Controller
     	Session::delete('user_name');
     	Session::delete('user_img');
     	echo "1";
+    }
+    public function articleSelect () {
+    	Session::set('jum',1);    	
+    	$keyword = $_POST['keyword'];
+    	$articleSelectArr=Db::query("select article.*,banner.name,user.img,user.username from article,banner,user where article.banner_id=banner.id and article.user_id=user.id and title like '%{$keyword}%' order by article.id desc");     	   	
+
+    	$this->assign('articleSelectArr',$articleSelectArr);
+        include 'public/article.php';
+        return view();
     }
 }

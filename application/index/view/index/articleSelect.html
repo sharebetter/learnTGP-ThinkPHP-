@@ -1,6 +1,6 @@
 {layout name="layout/indexLayout"/}
 
-{volist name="articleArr" id="value"}
+{volist name="articleSelectArr" id="value"}
         <article class="excerpt excerpt-1"><a class="focus" ><img class="thumb" src="__STATIC__/{$value['img']}" alt="">{$value['username']}</a>
           <header>
              <a class='cat' href="{:url('indexClass',['id'=>$value.banner_id])}">{$value.name}<i></i></a>
