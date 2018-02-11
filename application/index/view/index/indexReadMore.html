@@ -3,10 +3,10 @@
       <h3>最新发布</h3>
       <div class="more"><a href="">PHP</a><a href="">JavaScript</a><a href="">EmpireCMS</a><a href="">Apache</a><a href="">MySQL</a></div>
   </div> 
-{volist name="articleClassArr" id="value"}
+{volist name="articleMoreArr" id="value"}
         <article class="excerpt excerpt-1"><a class="focus" ><img class="thumb" src="__STATIC__/{$value['img']}" alt="">{$value['username']}</a>
           <header>
-             <a class='cat' href="{:url('indexClass')}?bannerId={$value.banner_id}">{$value.name}<i></i></a>
+            <a class='cat' href="{:url('indexClass')}?bannerId={$value.banner_id}">{$value.name}<i></i></a>
              <h2><a href="{:url('indexReadMore')}?articleId={$value.id}" title=''>{$value.title}</a></h2>
           </header>
           <p class="meta">
@@ -14,9 +14,7 @@
             <span class="views"><i class="glyphicon glyphicon-eye-open"></i> 共<span class="articleView">{$value.views}</span>人围观</span><span class="comment" data-toggle='modal'><i class="glyphicon glyphicon-comment"></i> 共<span class="commentTimes">{$value.comment_times}</span>条评论</span>
             </p></br>
             <a class="cat" href="javascript:">正文<i></i></a>
-            <a class="img-responsive">{$value.content|htmlspecialchars_decode|mb_substr=0,3000,'utf-8'}</a>
-            <p class="note">
-              <a style='float:right;margin-right:70px' href="{:url('indexReadMore',['articleId'=>$value.id])}">查看更多>></a></p>
+            <a class="img-responsive">{$value.content|htmlspecialchars_decode}</a>
             <a class="cat" href="javascript:" style="margin-top: 15px">用户评论：<i></i><i class="glyphicon glyphicon-comment"></i><span class="commentTimes">{$value.comment_times}</span></a><span class='meta user_comment' style='margin-left: 10%;font-size: 14px'><a class="comment" data-toggle='modal'><i class="glyphicon glyphicon-comment"></i>点击评论</a></span>
                <span class='userComment'>
                 {volist name="commentArr" id="val"}

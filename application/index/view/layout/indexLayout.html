@@ -12,7 +12,7 @@
 <!-- <link rel="stylesheet" type="text/css" href="__STATIC__/public/bs/css/font-awesome.min.css"> -->
 <link rel="apple-touch-icon-precomposed" href="__STATIC__/public/bs/images/icon/icon.png">
 <link rel="shortcut icon" href="__STATIC__/public/bs/images/icon/favicon.ico">
-
+<script src="__STATIC__/public/bs/js/jquery-2.1.4.min.js"></script>
 <!--[if gte IE 9]>
   <script src="js/jquery-1.11.1.min.js" type="text/javascript"></script>
   <script src="js/html5shiv.min.js" type="text/javascript"></script>
@@ -71,9 +71,17 @@
       </div>
       <div class="collapse navbar-collapse" id="header-navbar">
         <ul class="nav navbar-nav navbar-right">
-          <li class="hidden-index active"><a data-cont="平台首页" href="{:url('index/index')}">平台首页</a></li>
+           {if condition="$Request.session.banner_id==0"}
+              <li class="hidden-index active"><a data-cont="平台首页" href="{:url('index/index')}">平台首页</a></li>
+             {else\}
+              <li class="hidden-index"><a data-cont="平台首页" href="{:url('index/index')}">平台首页</a></li>
+           {/if}
           {volist name="bannerArr" id="value"}
-            <li><a href="{:url('indexClass',['id'=>$value.id])}">{$value['name']}</a></li>
+            {if condition="$Request.session.banner_id==$value.id"}
+              <li class="active"><a href="{:url('index/indexClass')}?bannerId={$value.id}">{$value['name']}</a></li>             
+             {else/}
+              <li><a href="{:url('index/indexClass')}?bannerId={$value.id}">{$value['name']}</a></li>
+            {/if}
           {/volist}
         </ul>
         <form class="navbar-form visible-xs" action="index.php" method="post">
@@ -116,13 +124,9 @@
         </div>
         <a class="left carousel-control" href="#focusslide" role="button" data-slide="prev" rel="nofollow"> <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span> <span class="sr-only">上一个</span> </a> <a class="right carousel-control" href="#focusslide" role="button" data-slide="next" rel="nofollow"> <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span> <span class="sr-only">下一个</span> </a> </div>
       <article class="excerpt-minic excerpt-minic-index">
-        <h2><span class="red">【今日良言】</span><a href="" title=""></a></h2>
+        <h2><span class="red">【今日良言】</span><a href="" title="">{$good_talk['title']}</a></h2>
         <p class="note">{$good_talk['content']}</p>
-      </article>
-      <div class="title">
-        <h3>最新发布</h3>
-        <div class="more"><a href="">PHP</a><a href="">JavaScript</a><a href="">EmpireCMS</a><a href="">Apache</a><a href="">MySQL</a></div>
-      </div> 
+      </article>      
       {__CONTENT__}
       <!-- <nav class="pagination" style="display: none;">
         <ul>
@@ -173,19 +177,19 @@
             </span> </div>
         </form>
       </div>
-    </div>
-    <div class="widget widget_sentence">
-      <h3>每日一句</h3>
-      <div class="widget-sentence-content">
-        <h4>{$daily_talkArr['time']|date="Y年m月d日",###} 星期<?php echo mb_substr( "日一二三四五六",date("w"),1,"utf-8" ); ?></h4>
-        <p style="line-height: 22px">{$daily_talkArr['content']}</p>
+      <div class="widget widget_sentence">
+        <h3>每日一句</h3>
+        <div class="widget-sentence-content">
+          <h4>{$daily_talkArr['time']|date="Y年m月d日",###} 星期<?php echo mb_substr( "日一二三四五六",date("w"),1,"utf-8" ); ?></h4>
+          <p style="line-height: 22px">{$daily_talkArr['content']}</p>
+        </div>
       </div>
-    </div>
+    </div>    
     <div class="widget widget_hot">
       <h3>热门文章</h3>
       <ul>
           {volist name="hotArticleArr" id="value"}
-             <li><a href="{:url('index',['id'=>$value.id])}"><span class="thumbnail"><img class="thumb"  alt="" src="__STATIC__/{$value['img']}"></span><span class="text">{$value.title}</span><span class="muted" style="display: block;line-height: 30px"><i class="glyphicon glyphicon-time"></i>{$value['time']|date="Y-m-d H:i:s",###}</span><span class="muted"><i class="glyphicon glyphicon-eye-open"></i>{$value.views}</span><span class="muted"><i class="glyphicon glyphicon-comment"></i>{$value.comment_times}</span></a></li>
+             <li><a href="{:url('index/indexReadMore')}?articleId={$value.id}"><span class="thumbnail"><img class="thumb"  alt="" src="__STATIC__/{$value['img']}"></span><span class="text">{$value.title}</span><span class="muted" style="display: block;line-height: 30px"><i class="glyphicon glyphicon-time"></i>{$value['time']|date="Y-m-d H:i:s",###}</span><span class="muted"><i class="glyphicon glyphicon-eye-open"></i>{$value.views}</span><span class="muted"><i class="glyphicon glyphicon-comment"></i>{$value.comment_times}</span></a></li>
           {/volist}               
       </ul>
     </div>
@@ -263,8 +267,7 @@
           </div>
           <p style="color: red;" id="mesg"></p>
         </div>
-        <div class="modal-footer">
-               
+        <div class="modal-footer">               
           <a type="button" class="btn btn-primary pull-left" href='#mymodal' data-toggle='modal' data-dismiss="modal">注册</a>        
           <button type="submit" class="btn btn-primary" id="loginBtn">登录</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
@@ -277,35 +280,35 @@
 <div class="modal fade user-select" id="mymodal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-       <form action="regist.php" method="post">
+<!--        <form action="{:url('regist')}" method="post"> -->
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title" id="loginModalLabel">用户注册</h4>
         </div>
         <div class="modal-body">
           <div class="form-group">
-            <label for="loginModalUserNmae">用户名</label>
-            <input type="text" class="form-control" id="loginModalUserNmae" placeholder="请输入用户名" name="username" autofocus maxlength="15" autocomplete="off" required>
+            <label for="registModalUserName">用户名</label>
+            <input type="text" class="form-control" id="registModalUserName" placeholder="请输入用户名" name="username" autofocus maxlength="15" autocomplete="off" required>
           </div>
           <div class="form-group">
-            <label for="loginModalUserPwd">密码</label>
-            <input type="password" class="form-control" id="loginModalUserPwd" placeholder="请输入密码" name="password" maxlength="18" autocomplete="off" required>
+            <label for="registModalUserPwd">密码</label>
+            <input type="password" class="form-control" id="registModalUserPwd" placeholder="请输入密码" name="password" maxlength="18" autocomplete="off" required>
           </div>
           <div class="form-group">
                <lable><h4 style="font-weight: blod">验证码图片</h4></lable></br>
-               <img src="__STATIC__/public/vcode/vercode.php" onclick="this.src='__STATIC__/public/vcode/vercode.php?rand='+Math.random()" />
+               <img src="__STATIC__/public/vcode/vercode.php" onclick="this.src='__STATIC__/public/vcode/vercode.php?rand='+Math.random()" id="vercode"/>
         </div>
         <div class="form-group">
               <lable><p><strong>用户输入验证码</strong></p></lable><p></p>
-                <input class="form-control" type="text" maxlength="18" autocomplete="off" required name="fcode"/>
+                <input class="form-control" type="text" maxlength="18" autocomplete="off" required name="fcode" id="fcode"/>
               </div>
+              <p style="color: red;" id="resgistMesg"></p>
          </div>     
-        <div class="modal-footer">
-       
-          <button type="submit" class="btn btn-primary">注册</button>
+        <div class="modal-footer">       
+          <button type="submit" class="btn btn-primary" id="registBtn">注册</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
         </div>
-      </form>
+      <!-- </form> -->
     </div>
   </div>
 </div>
@@ -346,10 +349,13 @@
     <li class="list-group-item"><span>浏览器：</span>Chrome47</li>
   </ul>
 </div> -->
-<script src="__STATIC__/public/bs/js/jquery-2.1.4.min.js"></script>
+<script src="__STATIC__/public/bs/js/bootstrap.min.js"></script>
+<script src="__STATIC__/public/bs/js/jquery.lazyload.min.js"></script> 
+<script src="__STATIC__/public/bs/js/nprogress.js"></script>
+<script src="__STATIC__/public/bs/js/jquery.ias.js"></script> 
+<script src="__STATIC__/public/bs/js/scripts.js"></script>
 <script type="text/javascript">
   $(function(){
-    $(window).scrollTop(0);
       var oSaid=$('.excerpt .said');
       var oCom=$('.excerpt .user_comment .comment');
       var oIput=$('.ipt');  
@@ -422,12 +428,13 @@
         }
       }
     }
+    // 登录
     $('#loginBtn').click(function(){
       var username = $('#loginModalUserName').val();
       var password = $('#loginModalUserPwd').val();      
       if(username!=='' && password!==''){
         $.ajax({
-            url: 'check',
+            url: '../index/check',
             type:'POST',
             data:{
               'username': username,
@@ -436,7 +443,10 @@
             success:function(res){
                if(res['state']==1){
                 $('.close').click();
-                $('#whetherLogin').html("<h4>欢迎<a style='margin-left: 15px' href='{:url('userInfo/index')}' class='login username'>"+res['user_name']+"<img class='head' src='__STATIC__/"+res['user_img']+"'></a><a style='margin-left: 15px' class='login' id='loginOut'> 退出</a></h4><a class='username' hidden>"+res['user_name']+"</a>");
+                $('#whetherLogin').html("<h4>欢迎<a style='margin-left: 15px' href='{:url('userInfo/index')}' class='login'>"+res['user_name']+"<img class='head' src='__STATIC__/"+res['user_img']+"'></a><a style='margin-left: 15px' class='login' id='loginOut'> 退出</a></h4><a class='username' hidden>"+res['user_name']+"</a>");
+                 if($('#modalHide')){
+                   $('#modalHide').attr('href','');
+                 }
                }else{
                 $('#mesg').html('用户名或密码错误');
                 $('#mesg').stop().fadeIn(700);
@@ -456,32 +466,89 @@
         },2000);
       }
     })
+    // 注册
+    $('#registBtn').click(function(){
+      var username = $('#registModalUserName').val();
+      var password = $('#registModalUserPwd').val();   
+      var fcode =  $('#fcode').val();
+      if(username!=='' && password!==''){
+        if(fcode!==''){
+          $.ajax({
+              url: '../index/regist',
+              type:'POST',
+              data:{
+                'username': username,
+                'password': password,
+                'fcode':fcode
+              },
+              success:function(res){
+                console.log(res);
+                 if(res['state']==1){
+                  $('.close').click();
+                  $('#whetherLogin').html("<h4>欢迎<a style='margin-left: 15px' href='{:url('userInfo/index')}' class='login'>"+res['user_name']+"<img class='head' src='__STATIC__/"+res['user_img']+"'></a><a style='margin-left: 15px' class='login' id='loginOut'> 退出</a></h4><a class='username' hidden>"+res['user_name']+"</a>");
+                   if($('#modalHide')){
+                     $('#modalHide').attr('href','');
+                   }
+                 }else{
+                    $("#vercode").click();
+                    if(res['state']==0){                      
+                      $('#resgistMesg').html('注册失败！');                    
+                    }else if(res['state']==-1){
+                      $('#resgistMesg').html('该用户名已被注册！');                                   
+                    }else{
+                      $('#resgistMesg').html('验证码输入错误！');
+                    }
+                    $('#resgistMesg').stop().fadeIn(700);
+                    setTimeout(function(){            
+                      $('#resgistMesg').stop().fadeOut(1000);
+                      $('#resgistMesg').html('');              
+                    },2000);
+                 }
+              }
+          })
+        }else{
+          $('#resgistMesg').html('请输入验证码！');
+          $('#resgistMesg').stop().fadeIn(700);
+          setTimeout(function(){            
+            $('#resgistMesg').stop().fadeOut(1000);
+            $('#resgistMesg').html('');              
+          },2000);
+        }               
+      }else{
+        $('#resgistMesg').html('用户名和密码不能为空');
+        $('#resgistMesg').stop().fadeIn(700);
+        setTimeout(function(){            
+          $('#resgistMesg').stop().fadeOut(1000);
+          $('#resgistMesg').html('');              
+        },2000);
+      }
+    })
+
     $('#whetherLogin').on('click','#loginOut',function(){
        cf=confirm('您确定退出吗?');
       if(!cf){
         return false;
       }else{
          $.ajax({
-          url: 'loginOut',
+          url: '../index/loginOut',
           type:'POST',
           data:{
           },
           success:function(res){
             if(res){
               $('#whetherLogin').html("<a data-toggle='modal' data-target='#loginModal' class='login' rel='nofollow'>Hi,请登录</a>&nbsp;&nbsp;<a href='#mymodal' data-toggle='modal' class='register' rel='nofollow'>我要注册</a>&nbsp;&nbsp;<a data-target='#passModal' data-toggle='modal' rel='nofollow'>找回密码</a>");    
+                if($('#modalHide')){
+                  $('#modalHide').attr('href','#loginModal');
+                }
             }            
           }
 
         })
       }
      })
-})
+  })
 </script>
-<script src="__STATIC__/public/bs/js/bootstrap.min.js"></script>
-<script src="__STATIC__/public/bs/js/jquery.lazyload.min.js"></script> 
-<script src="__STATIC__/public/bs/js/nprogress.js"></script>
-<script src="__STATIC__/public/bs/js/jquery.ias.js"></script> 
-<script src="__STATIC__/public/bs/js/scripts.js"></script>
+
 
 </body>
 </html>

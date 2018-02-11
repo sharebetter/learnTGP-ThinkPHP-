@@ -99,7 +99,7 @@ class Article extends Controller
         }
         else{
           echo '<script>alert("文章添加失败");</script>';
-          $this->redirect('index');
+          echo '<script>location="index"</script>';
         }
     }
 }
