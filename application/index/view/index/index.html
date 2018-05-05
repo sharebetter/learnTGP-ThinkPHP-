@@ -21,7 +21,36 @@
                <span class='userComment'>
                 {volist name="commentArr" id="val"}
                   {if condition="$val.article_id == $value.id"}
-                     <p><strong>{$val['username']}: </strong> {$val['user_comment']}</p>
+                     <div class="comment_users"><img class="comment_users_img" src="__STATIC__/{$val['img']}"/><a class="comment_username"><strong>{$val['username']}</strong></a>
+                      <span class='meta' style="position:absolute;margin-top: 11px;margin-left: 75px "><a class="reply_comment" data-toggle='modal'><i class="glyphicon glyphicon-comment"></i> 回复</a></span>
+                      <time class="meta time" style="position:absolute;margin-top: 35px "><i class="glyphicon glyphicon-time"></i>{$val['comment_time']|date="Y-m-d H:i:s",###}</time>
+                      <p style="margin-left:20px;margin-top: 15px">{$val['user_comment']}</p>                    
+                      <div class="reply">
+                        <div></br>              
+                          <input class="ipt form-control" type="text" name="comment" required autofocus autocomplete="off" />
+                          <input type="hidden" name="comment_id" value="{$val.id}"/>
+                          <input type="button" class="btn btn-primary btn-sm" style="margin-top: 5px" value="回复" /> 
+                        </div>
+                      </div>
+                      <!-- 用户回复： -->                     
+                      <div class="reply_wrap">                                                
+                         <div class="showReply">
+                          {if condition="$val.reply_times>0"}
+                          一共有<span class="reply_times">{$val.reply_times}</span>条回复，<a>点击展开</a>
+                          {/if}
+                        </div>
+                        <div class="reply_content">
+                          <div class="line"></div>
+                            <div class = "reply_content_list">
+                              {volist name="replyArr" id="reply"}               
+                                 {if condition="$reply.comment_id == $val.id"}
+                                    <p><a><strong>{$reply['username']}: </strong></a> {$reply['reply_content']}</p>
+                                 {/if}
+                              {/volist}
+                            </div>
+                        </div>                      
+                      </div>
+                     <div style="border: 1px solid #EAEAEA;transform: scaleY(0.7);"></div>                    
                   {/if}
                 {/volist}
                </span>

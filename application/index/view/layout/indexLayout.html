@@ -23,8 +23,11 @@
   <script>window.location.href='upgrade-browser.html';</script>
 <![endif]-->
 <style>
-.said{
+.said,.reply{
   display: none
+}
+.reply{
+  margin-left: 25px;
 }
 .head{
   width: 50px;
@@ -36,6 +39,42 @@
 }
 .img-responsive{
   color: black;
+}
+.userComment .comment_users{
+  padding:10px 0;
+}
+.userComment .comment_users_img{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin: 5px 10px;
+}
+.userComment .comment_username{
+  position: absolute;
+  margin:9px 5px 11px 8px;
+}
+.reply_content .line{
+  width: 1px;
+  height:100%;
+  background-color: #3399CC;
+  position: absolute;
+}
+.reply_content p{
+  margin-left:20px;
+}
+.reply_content{
+  font-size: 11px;
+  margin: 10px 0;
+  overflow: hidden;
+  position: relative;
+}
+.reply_wrap .showReply{
+  margin:10px 0 10px 20px;
+  color:#999999;
+}
+.reply_wrap .reply_content{
+  margin-left: 20px;
+  display:none;
 }
 </style>
 </head>
@@ -358,9 +397,11 @@
   $(function(){
       var oSaid=$('.excerpt .said');
       var oCom=$('.excerpt .user_comment .comment');
-      var oIput=$('.ipt');  
+      var oIput=$('.said .ipt');  
       var index=0;
       oCom.click(function(){
+        var replyIpt = $('.reply');
+        replyIpt.stop().hide(600);
         index=$(this).index('.excerpt .user_comment .comment');
         oSaid.stop().hide(800);        
         oSaid.eq(index).stop().toggle(800);
@@ -385,7 +426,7 @@
     // }else{
     //      $('.jumbotron').hide();
     // }
-    $('.ipt').keydown(function(event){
+    $('.said .ipt').keydown(function(event){
       if(event.keyCode == '13'){
         addComment($('.said .btn').eq(index))
         //console.log($('.said .btn').eq(index))
@@ -400,10 +441,14 @@
           $('#loginModal').modal('show');
       }else{
         var a=_this.prev().val();
-        var b = _this.prevAll().filter(".ipt").val();
-        if(b==''){
+        var b = _this.prevAll().filter(".said .ipt").val();
+        if(b.length==0){
 
         }else{
+          var crtTime = new Date();
+          var comment_time =  dateFtt("yyyy-MM-dd hh:mm:ss",crtTime);
+          var comment = $('.userComment').eq(index).html();         
+          // $('.userComment').eq(index).html(comment+"<div class='comment_users'><img class='comment_users_img' src='__STATIC__/{$Request.session.user_img}'/><a class='comment_username'><strong>{$Request.session.user_name}</strong></a><span class='meta' style='position:absolute;margin-top: 11px;margin-left: 75px '><a class='reply_comment' data-toggle='modal'><i class='glyphicon glyphicon-comment'></i> 回复</a></span><time class='meta time' style='position:absolute;margin-top: 35px '><i class='glyphicon glyphicon-time'></i>"+comment_time+"</time><p style='margin-left:20px;margin-top: 15px'>"+b+"</p><div class='reply'><div></br><input class='ipt form-control' type='text' name='comment' required autofocus autocomplete='off' /><input type='button' class='btn btn-primary btn-sm' style='margin-top: 5px' value='回复' /> </div></div></div><div style='border: 1px solid #EAEAEA;transform: scaleY(0.7);'></div>");
           $.ajax({
             url: '../Comment/addComment',
             type:'POST',
@@ -415,12 +460,12 @@
                if(res=='0'){
                  var comment = $('.userComment').eq(index).html();
                  // $('.userComment').eq(index).html(content+`<p><strong> ${$('.username').html()}: </strong> ${b}</p>`);
-                 //es6 语法 手机端无法识别
-                 $('.userComment').eq(index).html(comment+"<p><strong> "+$('.username').html()+": </strong>"+ b +"</p>");
+                 //es6 语法 手机端无法识别                 
+                  $('.userComment').eq(index).html(comment+"<div class='comment_users'><img class='comment_users_img' src='__STATIC__/{$Request.session.user_img}'/><a class='comment_username'><strong>{$Request.session.user_name}</strong></a><span class='meta' style='position:absolute;margin-top: 11px;margin-left: 75px '><a class='reply_comment' data-toggle='modal'><i class='glyphicon glyphicon-comment'></i> 回复</a></span><time class='meta time' style='position:absolute;margin-top: 35px '><i class='glyphicon glyphicon-time'></i>"+comment_time+"</time><p style='margin-left:20px;margin-top: 15px'>"+b+"</p><div class='reply'><div></br><input class='ipt form-control' type='text' name='comment' required autofocus autocomplete='off' /><input type='button' class='btn btn-primary btn-sm' style='margin-top: 5px' value='回复' /> </div></div></div><div style='border: 1px solid #EAEAEA;transform: scaleY(0.7);'></div>");
                  $('.commentTimes').eq(index*2).html(Number($('.commentTimes').eq(index*2).html())+1);
                  $('.commentTimes').eq(index*2+1).html(Number($('.commentTimes').eq(index*2+1).html())+1);
                  $('.articleView').eq(index).html(Number($('.articleView').eq(index).html())+1);
-                 $('.ipt').val('')
+                 $('.said .ipt').val('')
                }
             }
 
@@ -428,6 +473,25 @@
         }
       }
     }
+    // 时间格式
+    function dateFtt(fmt,date)   
+    { //author: meizz   
+      var o = {   
+        "M+" : date.getMonth()+1,                 //月份   
+        "d+" : date.getDate(),                    //日   
+        "h+" : date.getHours(),                   //小时   
+        "m+" : date.getMinutes(),                 //分   
+        "s+" : date.getSeconds(),                 //秒   
+        "q+" : Math.floor((date.getMonth()+3)/3), //季度   
+        "S"  : date.getMilliseconds()             //毫秒   
+      };   
+      if(/(y+)/.test(fmt))   
+        fmt=fmt.replace(RegExp.$1, (date.getFullYear()+"").substr(4 - RegExp.$1.length));   
+      for(var k in o)   
+        if(new RegExp("("+ k +")").test(fmt))   
+      fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));   
+      return fmt;   
+    } 
     // 登录
     $('#loginBtn').click(function(){
       var username = $('#loginModalUserName').val();
@@ -482,7 +546,7 @@
                 'fcode':fcode
               },
               success:function(res){
-                console.log(res);
+                // console.log(res);
                  if(res['state']==1){
                   $('.close').click();
                   $('#whetherLogin').html("<h4>欢迎<a style='margin-left: 15px' href='{:url('userInfo/index')}' class='login'>"+res['user_name']+"<img class='head' src='__STATIC__/"+res['user_img']+"'></a><a style='margin-left: 15px' class='login' id='loginOut'> 退出</a></h4><a class='username' hidden>"+res['user_name']+"</a>");
@@ -546,6 +610,64 @@
         })
       }
      })
+    $('.reply_comment').click(function(){
+      var oSaid=$('.excerpt .said');
+      oSaid.stop().hide(600);
+      var replyIndex = $(this).index('.reply_comment');
+      var replyIpt = $('.reply');
+      replyIpt.stop().hide(800);        
+      replyIpt.eq(replyIndex).stop().toggle(800);
+      $('.reply .ipt').eq(replyIndex).focus();
+      $('.reply .btn').eq(replyIndex).click(function(){
+          replyComment();
+      })
+      $('.reply .ipt').eq(replyIndex).keydown(function(event){
+        if(event.keyCode == '13'){
+          replyComment();
+        }      
+      })
+      function replyComment() {
+        if(!$('#whetherLogin .username').html()){
+          $('#loginModal').modal('show');
+        }else{
+          var replyValue = $('.reply .ipt').eq(replyIndex).val();
+          var commentId = $('.reply .ipt').eq(replyIndex).next().val();
+          // console.log(commentId)
+          if(replyValue.length == 0){
+
+          }else{
+            $.ajax({
+              url: '../Comment/replyComment',
+              type:'POST',
+              data:{
+                'commentId': commentId,
+                'replyValue':replyValue
+              },
+              success:function(res) {
+                  if(res == '0'){
+                    var replyContent = $('.reply_content .reply_content_list').eq(replyIndex).html();     
+                    $('.reply_content .reply_content_list').eq(replyIndex).html("<p><a><strong>{$Request.session.user_name}: </strong></a>"+ replyValue +"</p>"+replyContent);
+                    var reply_times = $('.showReply').eq(replyIndex).children('.reply_times').html();
+                    if(reply_times>0){
+                     $('.showReply').eq(replyIndex).find('.reply_times').html(parseInt(reply_times)+1);
+                    }else{                      
+                       $('.showReply').eq(replyIndex).html('一共有<span class="reply_times">1</span>条回复，<a>点击展开</a>');
+                    }  
+                    $('.reply_content').eq(replyIndex).show(800);
+                    $('.reply .ipt').eq(replyIndex).val('');
+                  }else{
+                    alert('回复失败！')
+                  }
+              }
+            })
+          }          
+        }
+      }
+    })
+    $('.showReply').click(function(){
+      var replyIndex = $(this).index('.showReply');
+      $('.reply_content').eq(replyIndex).toggle(800);
+    })
   })
 </script>
 

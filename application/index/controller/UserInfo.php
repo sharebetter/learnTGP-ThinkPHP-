@@ -13,10 +13,25 @@ class UserInfo extends Controller
 {
     public function index()
     {
+        include 'public/article.php';
         $userId = Session::get('user_id');
         $userInfo=UserModel::get($userId)->getData();
         $this->assign('userInfo',$userInfo);
         return view();
+    }
+    public function articleSelect () {
+        Session::set('jum',1);
+        //模块id
+        $indexBannerId=Session::get('banner_id');
+        $keyword = $_POST['keyword'];
+        if($indexBannerId){
+            $articleSelectArr=Db::query("select article.*,banner.name,user.img,user.username from article,banner,user where article.banner_id=banner.id and article.user_id=user.id and banner.id=$indexBannerId and title like '%{$keyword}%' order by article.id desc");
+        }else{
+            $articleSelectArr=Db::query("select article.*,banner.name,user.img,user.username from article,banner,user where article.banner_id=banner.id and article.user_id=user.id and title like '%{$keyword}%' order by article.id desc");
+        }
+        $this->assign('articleSelectArr',$articleSelectArr);
+        include 'public/article.php';
+        return view('./index/articleSelect');
     }
     public function update(){
         $user=new UserModel();

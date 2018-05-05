@@ -54,12 +54,22 @@ use \app\index\model\User as UserModel;
         //用户评论
         $commentArr=Db::view('comment',"*")
             ->view('article','time','article.id=comment.article_id')
-            ->view('user','username','user.id=comment.user_id')
+            ->view('user','username,img','user.id=comment.user_id')
             ->select();
         // dump ($commentArr);
         // exit;
         $this->assign('commentArr',$commentArr);
-
+        
+        // 用户回复
+        $replyArr=Db::view('comment',"*")
+            ->view('reply_comment','*','reply_comment.comment_id=comment.id')
+            ->view('user','username','user.id=comment.user_id')
+            ->order('reply_comment.id','DESC')
+            ->select();
+        // dump($replyArr);
+        // exit;
+        $this->assign('replyArr',$replyArr);
+        
         // 热门文章
         $hotArticleArr=Db::view('article',"*")
             ->view('banner','name','article.banner_id=banner.id')
