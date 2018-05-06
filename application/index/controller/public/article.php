@@ -78,6 +78,25 @@ use \app\index\model\User as UserModel;
             ->order('comment_times','DESC')
             ->limit(5)
             ->select();
+        $user_id = Session::get('user_id');
+        if(isset($user_id)){
+            foreach ($hotArticleArr as $key => $value) {
+                $has_goods = 0;
+                if(strlen($value['has_goods_userid'])>0){
+                    $usersArr = explode(",", $value['has_goods_userid'] );
+                    foreach ($usersArr as $key2 => $val) {
+                        if($user_id == $val){
+                            $has_goods = 1;
+                        }
+                    }
+                }
+                $hotArticleArr[$key]['has_goods'] = $has_goods;
+            } 
+        }else{
+            foreach ($hotArticleArr as $key => $value) {
+                 $hotArticleArr[$key]['has_goods'] = 0;
+            }
+        }
         $this->assign('hotArticleArr',$hotArticleArr);
         // dump($hotArticleArr);
         // exit;

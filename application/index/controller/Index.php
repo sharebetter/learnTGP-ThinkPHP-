@@ -14,7 +14,7 @@ use \app\index\model\User as UserModel;
 class Index extends Controller
 {
     public function index()
-    {    	
+    {    	        
     	Session::set('banner_id',0);
         include 'public/article.php'; 
         //文章和文章发布人信息        
@@ -22,7 +22,26 @@ class Index extends Controller
         ->view('banner','name','article.banner_id=banner.id')
         ->view('user','img,username','user.id=article.user_id')
         ->order('id','DESC')
-        ->select();                
+        ->select();
+        $user_id = Session::get('user_id');
+        if(isset($user_id)){
+            foreach ($articleArr as $key => $value) {
+                $has_goods = 0;
+                if(strlen($value['has_goods_userid'])>0){
+                    $usersArr = explode(",", $value['has_goods_userid'] );
+                    foreach ($usersArr as $key2 => $val) {
+                        if($user_id == $val){
+                            $has_goods = 1;
+                        }
+                    }
+                }
+                $articleArr[$key]['has_goods'] = $has_goods;
+            } 
+        }else{
+            foreach ($articleArr as $key => $value) {
+                 $articleArr[$key]['has_goods'] = 0;
+            }
+        }
         $this->assign('articleArr',$articleArr);
 
         return view();   
@@ -141,14 +160,54 @@ class Index extends Controller
     	}
     	include 'public/article.php'; 
     	Session::set('banner_id',$bannerId);
-    	$articleClassArr=Db::query("select article.*,banner.name,user.img,user.username from article,banner,user where article.banner_id=banner.id and article.user_id=user.id and banner.id=$bannerId order by article.id desc");     	   	
+    	$articleClassArr=Db::query("select article.*,banner.name,user.img,user.username from article,banner,user where article.banner_id=banner.id and article.user_id=user.id and banner.id=$bannerId order by article.id desc");  
+
+        $user_id = Session::get('user_id');
+        if(isset($user_id)){
+            foreach ($articleClassArr as $key => $value) {
+                $has_goods = 0;
+                if(strlen($value['has_goods_userid'])>0){
+                    $usersArr = explode(",", $value['has_goods_userid'] );
+                    foreach ($usersArr as $key2 => $val) {
+                        if($user_id == $val){
+                            $has_goods = 1;
+                        }
+                    }
+                }
+                $articleClassArr[$key]['has_goods'] = $has_goods;
+            } 
+        }else{
+            foreach ($articleClassArr as $key => $value) {
+                 $articleClassArr[$key]['has_goods'] = 0;
+            }
+        }   	   	
     	$this->assign('articleClassArr',$articleClassArr);
     	return view();
     }
     public function indexReadMore ($articleId) {
     	include 'public/article.php';     	    
     	Db::table("article")->where("id",$articleId)->setInc("views");	
-    	$articleMoreArr=Db::query("select article.*,banner.name,user.img,user.username from article,banner,user where article.banner_id=banner.id and article.user_id=user.id and article.id=$articleId order by article.id desc");     	   	
+    	$articleMoreArr=Db::query("select article.*,banner.name,user.img,user.username from article,banner,user where article.banner_id=banner.id and article.user_id=user.id and article.id=$articleId order by article.id desc");  
+
+        $user_id = Session::get('user_id');
+        if(isset($user_id)){
+            foreach ($articleMoreArr as $key => $value) {
+                $has_goods = 0;
+                if(strlen($value['has_goods_userid'])>0){
+                    $usersArr = explode(",", $value['has_goods_userid'] );
+                    foreach ($usersArr as $key2 => $val) {
+                        if($user_id == $val){
+                            $has_goods = 1;
+                        }
+                    }
+                }
+                $articleMoreArr[$key]['has_goods'] = $has_goods;
+            } 
+        }else{
+            foreach ($articleMoreArr as $key => $value) {
+                 $articleMoreArr[$key]['has_goods'] = 0;
+            }
+        }          
     	$this->assign('articleMoreArr',$articleMoreArr);
     	return view();
     }
