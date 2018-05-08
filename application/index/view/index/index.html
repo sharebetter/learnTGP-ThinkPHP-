@@ -4,7 +4,7 @@
       <div class="more"><a href="">PHP</a><a href="">JavaScript</a><a href="">EmpireCMS</a><a href="">Apache</a><a href="">MySQL</a></div>
   </div> 
 {volist name="articleArr" id="value"}
-        <article class="excerpt excerpt-1"><a class="focus" ><img class="thumb" src="__STATIC__/{$value['img']}" alt="">{$value['username']}</a>
+        <article class="excerpt excerpt-1"><a class="focus" href="{:url('UserInfo/otherInfo')}?otherUserid={$value.user_id}"><img class="thumb" src="__STATIC__/{$value['img']}" alt="">{$value['username']}</a>
           <header>
              <a class='cat' href="{:url('indexClass')}?bannerId={$value.banner_id}">{$value.name}<i></i></a>
              <h2><a href="{:url('indexReadMore')}?articleId={$value.id}" title=''>{$value.title}</a></h2>

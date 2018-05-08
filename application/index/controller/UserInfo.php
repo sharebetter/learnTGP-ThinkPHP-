@@ -17,7 +17,128 @@ class UserInfo extends Controller
         $userId = Session::get('user_id');
         $userInfo=UserModel::get($userId)->getData();
         $this->assign('userInfo',$userInfo);
+
+        $followingArr = explode(",", $userInfo['following'] );
+        $followingInfoArr =[];
+        foreach ($followingArr as $key => $val) {
+            if(strlen($val)>0){
+               $followingInfoArr[$key] = UserModel::get($val)->getData();
+            }
+         }
+        $this->assign('followingInfoArr',$followingInfoArr);
+
+        $myArticleInfoArr=Db::view('article','*')
+        ->view('banner','name','article.banner_id=banner.id')
+        ->view('user','img,username','user.id=article.user_id')
+        ->where('article.user_id',$userId)
+        ->order('id','DESC')
+        ->select();
+        $user_id = Session::get('user_id');
+        if(isset($user_id)){
+            foreach ($myArticleInfoArr as $key => $value) {
+                $has_goods = 0;
+                if(strlen($value['has_goods_userid'])>0){
+                    $usersArr = explode(",", $value['has_goods_userid'] );
+                    foreach ($usersArr as $key2 => $val) {
+                        if($user_id == $val){
+                            $has_goods = 1;
+                        }
+                    }
+                }
+                $myArticleInfoArr[$key]['has_goods'] = $has_goods;
+            } 
+        }else{
+            foreach ($myArticleInfoArr as $key => $value) {
+                 $myArticleInfoArr[$key]['has_goods'] = 0;
+            }
+        }
+        $this->assign('myArticleInfoArr',$myArticleInfoArr);
+
         return view();
+    }
+    public function otherInfo($otherUserid){
+        include 'public/article.php';
+        $userId = $otherUserid;
+        $userInfo=UserModel::get($userId)->getData();
+        $this->assign('userInfo',$userInfo);
+        $followingArr = explode(",", $userInfo['following'] );
+        $followingInfoArr =[];
+        foreach ($followingArr as $key => $val) {
+            if(strlen($val)>0){
+               $followingInfoArr[$key] = UserModel::get($val)->getData();
+            }
+         }
+        $this->assign('followingInfoArr',$followingInfoArr);
+        // 判断是否关注过
+        $myInfo=UserModel::get(Session::get('user_id'))->getData();
+        $myFlollowingArr =  explode(",", $myInfo['following'] );
+        $myFlollowingFlag = 0;
+        if(in_array($otherUserid,$myFlollowingArr)){
+            $myFlollowingFlag = 1;
+        }
+        $this->assign('myFlollowingFlag',$myFlollowingFlag);
+
+        $myArticleInfoArr=Db::view('article','*')
+        ->view('banner','name','article.banner_id=banner.id')
+        ->view('user','img,username','user.id=article.user_id')
+        ->where('article.user_id',$userId)
+        ->order('id','DESC')
+        ->select();
+        $user_id = Session::get('user_id');
+        if(isset($user_id)){
+            foreach ($myArticleInfoArr as $key => $value) {
+                $has_goods = 0;
+                if(strlen($value['has_goods_userid'])>0){
+                    $usersArr = explode(",", $value['has_goods_userid'] );
+                    foreach ($usersArr as $key2 => $val) {
+                        if($user_id == $val){
+                            $has_goods = 1;
+                        }
+                    }
+                }
+                $myArticleInfoArr[$key]['has_goods'] = $has_goods;
+            } 
+        }else{
+            foreach ($myArticleInfoArr as $key => $value) {
+                 $myArticleInfoArr[$key]['has_goods'] = 0;
+            }
+        }
+        $this->assign('myArticleInfoArr',$myArticleInfoArr);
+        return view();        
+    }
+    public function addFollowing () {
+        $focusUserId = $_POST['focusUserId'];
+        $followingFlag = $_POST['followingFlag'];
+        // echo $focusUserId.' '.$followingFlag;
+        $user_id = Session::get('user_id');
+        $UserModel =new UserModel();
+        $userInfo = UserModel::get(["id"=>$user_id]);
+        if($followingFlag){
+            if(strpos($userInfo['following'],$focusUserId)){
+
+            }else{
+                $userInfo['following']=$userInfo['following'].','.$focusUserId;
+            }            
+        }else{
+            $followingUserArr = explode(',', $userInfo['following']);
+            $userInfo['following'] = '';
+            foreach ($followingUserArr as $key => $value) {
+                if($value != $focusUserId && strlen($value)>0){
+                    $userInfo['following']=$userInfo['following'].','.$value;
+                }
+            }
+        }
+       
+        $res=$UserModel->save(
+            [
+                'following' => $userInfo['following']
+            ],["id"=>$user_id]
+        );
+        if($res){
+           echo "0";
+        }else{
+           echo "1";
+        }
     }
     public function articleSelect () {
         Session::set('jum',1);

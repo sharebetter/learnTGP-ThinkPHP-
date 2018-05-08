@@ -405,7 +405,7 @@
 <script type="text/javascript">
   $(function(){
       var path = '../'; 
-      if(location.pathname.indexOf('indexreadmore')!=-1){
+      if(location.pathname.toLowerCase().indexOf('indexreadmore/')!=-1){
         path = '../../../';
       }
       var oSaid=$('.excerpt .said');
@@ -742,7 +742,13 @@
       var replyIndex = $(this).index('.showReply');
       $('.reply_content').eq(replyIndex).toggle(800);
     })
-
+    //检验是否登录，否则无法查看用户主页
+    $('.excerpt .focus').click(function(){
+      if(!$('#whetherLogin .username').html()){
+        $('#loginModal').modal('show');
+        return false;
+      }
+    })
     // 点赞
     $('.goods').click(function(){
       if(!$('#whetherLogin .username').html()){

@@ -1,11 +1,11 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
 <meta name="renderer" content="webkit">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ZHM博客</title>
+<title>学习交流平台</title>
 <link href="https://cdn.bootcss.com/cropper/3.1.3/cropper.min.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="__STATIC__/public/bs/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="__STATIC__/public/bs/css/nprogress.css">
@@ -176,6 +176,7 @@
     flex-basis: 24%;
     margin:20px 0px;
  }
+
  .following li .thumb{
     width:80px;
     height:80px;
@@ -190,6 +191,27 @@
 <header class="header">
   <nav class="navbar navbar-default" id="navbar">
     <div class="container">
+      <div class="header-topbar link-border">
+        <ul class="site-nav hidden-xs topmenu">
+          <li><a href="tags.html">标签云</a></li>
+          <li><a href="readers.html" rel="nofollow">读者墙</a></li>
+          <li><a href="links.html" rel="nofollow">友情链接</a></li>
+          <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" rel="nofollow">关注本站 <span class="caret"></span></a>
+            <ul class="dropdown-menu header-topbar-dropdown-menu">
+              <li><a data-toggle="modal" data-target="#WeChat" rel="nofollow"><i class="fa fa-weixin"></i> 微信</a></li>
+              <li><a href="#" rel="nofollow"><i class="fa fa-weibo"></i> 微博</a></li>
+              <li><a data-toggle="modal" data-target="#areDeveloping" rel="nofollow"><i class="fa fa-rss"></i> RSS</a></li>
+            </ul>
+          </li>
+        </ul>
+        <div id="whetherLogin" style='margin-bottom: -10px'>
+          {if condition="$Request.session.user_id"}
+             <h4>欢迎<a style='margin-left: 15px' href="{:url('userInfo/index')}" class="login">{$Request.session.user_name}<img class='head' src="__STATIC__/{$Request.session.user_img}"></a></h4><a class="username" hidden>{$Request.session.user_name}</a>
+            {else/}
+                <a data-toggle="modal" data-target="#loginModal" class="login" rel="nofollow">Hi,请登录</a>&nbsp;&nbsp;<a href='#mymodal' data-toggle='modal' class="register" rel="nofollow">我要注册</a>&nbsp;&nbsp;<a data-target="#passModal" data-toggle='modal' rel="nofollow">找回密码</a>
+          {/if}
+        </div>
+       </div>
       <div class="navbar-header">
         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#header-navbar" aria-expanded="false"> <span class="sr-only"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
         <h1 class="logo hvr-bounce-in"><a href="{:url('index/index')}" title=""><img src="__STATIC__/public/bs/images/logo.png" alt=""></a></h1>
@@ -224,97 +246,37 @@
 <section class="container">
   <div class="content-wrap">
     <div class="content">
-    <article class='article'>
-    <section class="container-fluid">
+      <article class='article'>
+      <section class="container-fluid">
         <div class="row">
           <div class="col-sm-12 col-md-12 col-lg-12 main" id="main">
-            <div class="row">              
-              <form action="{:url('update')}" method='post' enctype='multipart/form-data' class="add-article-form">
-                <div class="col-md-12 text-center">
-                  <h1 class="page-header text-center">个人中心</h1>                  
-                 <div class="headimg">
-                       <a title=""><img class="thumb" style="width: 75px;height: 75px;border-radius: 50%" alt="" src="__STATIC__/{$userInfo['img']}" id="user-photo"></a>
-                       <p style="margin-top:20px"></p>
-                        <!-- <label for="">更改头像:</label>       -->
-                        <!-- <button type="button" class="btn btn-primary"  data-target="#changeModal" data-toggle="modal">头像修改</button> -->
-                        <!-- <input type="file" name="img" id="" style='margin:8px 40%;'> -->
-                 </div>     
-                 <div class="modal fade" id="changeModal" tabindex="-1" role="dialog" aria-hidden="true">
-                  <div class="modal-dialog">
-                      <div class="modal-content">
-                          <div class="modal-header">
-                              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                              <h4 class="modal-title text-primary">
-                              <i class="fa fa-pencil"></i>
-                                          更换头像
-                              </h4>
-                          </div>
-                          <div class="modal-body">
-                              <p class="tip-info text-center">
-                                  未选择图片
-                              </p>
-                              <div class="img-container hidden">
-                                  <img src="" alt="" id="photo">
-                              </div>
-                              <div class="img-preview-box hidden">
-                                  <hr>
-                                  <span>150*150:</span>
-                                  <div class="img-preview img-preview-lg">
-                                  </div>
-                                  <span>100*100:</span>
-                                  <div class="img-preview img-preview-md">
-                                  </div>
-                                  <span>30*30:</span>
-                                  <div class="img-preview img-preview-sm">
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="modal-footer">
-                              <label class="btn btn-danger pull-left" for="photoInput">
-                              <input type="file" name="img" class="sr-only" id="photoInput" accept="image/*">
-                              <span>打开图片</span>
-                              </label>
-                              <button type="button" class="btn btn-primary disabled" disabled="true" onclick="sendPhoto();">提交</button>
-                              <button type="button" class="btn btn-close" aria-hidden="true" data-dismiss="modal">取消</button>
-                          </div>
-                      </div>
+            <div class="row">
+              <div class="col-md-12 text-center">
+                  <h1 class="page-header text-center"><img class="thumb" style="width: 75px;height: 75px;border-radius: 50%" alt="" src="__STATIC__/{$userInfo['img']}" id="user-photo">{$userInfo.username} 的主页 
+                    {if condition="$myFlollowingFlag == 1"}
+                        <input type="button" data="{$userInfo.id}" class="btn btn-success" id="focusFollowing" value="取消关注">
+                        {else}
+                        <input type="button" data="{$userInfo.id}" class="btn btn-success" id="focusFollowing" value="关注">
+                    {/if}
+                    </h1>   
+                  <div class="headimg">                      
+                       <p style="margin-top:20px;"></p>
                   </div>
-              </div>
-                 <!-- 头像模态框 -->
-                 <div class="motai text-center" id="mo">
-                   <span class="close" id="close">×</span>
-                   <img class="motaiimg" id="moimg">                   
-                   <div id="caption"></div>
-                   <button type="button" class="btn btn-primary"  data-target="#changeModal" data-toggle="modal">头像修改</button>
-                 </div>
-                  <div class="form-group" style='width: 30%;margin:10px auto 0' >
-                    <label for="">用户名:</label>
-                    <input type="text" class="form-control" name='username' required autocomplete="off" value="{$userInfo['username']}">
-                  </div>
-                  <div class="form-group" style='width: 30%;margin:0 auto'>
-                    <label for="">密码:</label>
-                    <input type="password" class="form-control" name='password' required autocomplete="off" value="######">
-                  </div>                                          
-                  <div class="form-group" style='margin-top:20px;'>
-                    <input type="submit" class='btn btn-primary' value="提交">
-                    <input type="reset" class='btn btn-danger'>
-                  </div>
-                </div>
-              </form>
+              </div>                           
               <ul class = "intro" id="myTab"> 
                 <li class="active"><a href="#articlePub" role="tab" data-toggle="tab"><img src="../../static/public/bs/images/icon/blog.png"/><div class="writting">发布的文章</div></a></li>
-                <li><a href="#getLove" role="tab" data-toggle="tab"><img src="../../static/public/bs/images/icon/love.png"/><div class="writting">我的关注</div></a></li>
-                <li><a href="#collections" role="tab" data-toggle="tab"><img src="../../static/public/bs/images/icon/collection.png"/><div class="writting">我的收藏</div></a></li>
-                <li><a href="#messages" role="tab" data-toggle="tab"><img src="../../static/public/bs/images/icon/message.png"/><div class="writting">我的私信</div></a></li>
+                <li><a href="#getLove" role="tab" data-toggle="tab"><img src="../../static/public/bs/images/icon/love.png"/><div class="writting">他的关注</div></a></li>
+                <li><a href="#collections" role="tab" data-toggle="tab"><img src="../../static/public/bs/images/icon/collection.png"/><div class="writting">他的收藏</div></a></li>
+                <li><a href="#messages" role="tab" data-toggle="tab"><img src="../../static/public/bs/images/icon/message.png"/><div class="writting">私信我</div></a></li>
               </ul>
               <!-- 选项卡 -->
               <div id="myTabContent" class="tab-content">
                  <div class="tab-pane fade in active" id="articlePub">
                     {volist name="myArticleInfoArr" id="value"}
-                      <article class="excerpt excerpt-1"><a class="focus" ><img class="thumb" src="__STATIC__/{$value['img']}" alt="">{$value['username']}</a>
+                      <article class="excerpt excerpt-1"><a class="focus"><img class="thumb" src="__STATIC__/{$value['img']}" alt="">{$value['username']}</a>
                         <header>
-                           <a class='cat' href="{:url('/index/index/indexClass')}?bannerId={$value.banner_id}">{$value.name}<i></i></a>
-                           <h2><a href="{:url('/index/index/indexReadMore')}?articleId={$value.id}" title=''>{$value.title}</a></h2>
+                           <a class='cat' href="{:url('indexClass')}?bannerId={$value.banner_id}">{$value.name}<i></i></a>
+                           <h2><a href="{:url('indexReadMore')}?articleId={$value.id}" title=''>{$value.title}</a></h2>
                         </header>
                         <span class="get_article_id" hidden>{$value.id}</span>
                         <p class="meta">
@@ -339,28 +301,20 @@
                  <div class="tab-pane fade text-center" id="getLove">
                     <ul class="following">                  
                       {volist name="$followingInfoArr" id="value"}
-                          <li><a class="focus" href="{:url('otherInfo')}?otherUserid={$value.id}"><img class="thumb" src="__STATIC__/{$value['img']}" alt=""><p>{$value['username']}</p></a></li>
+                          <li><a class="focus" href="{:url('otherInfo')}?otherUserid={$value.id}"><img class="thumb" src="__STATIC__/{$value['img']}" alt=""><p>{$value['username']}1</p></a></li>
                       {/volist}
                     </ul>                    
                  </div>
                  <div class="tab-pane fade" id="collections">
                     <p>jMeter is an Open Source testing software. It is 100% pure 
                     Java application for load and performance testing.</p>
-                 </div>
-                 <div class="tab-pane fade" id="messages">
-                    <p>Enterprise Java Beans (EJB) is a development architecture 
-                       for building highly scalable and robust enterprise level    
-                       applications to be deployed on J2EE compliant 
-                       Application Server such as JBOSS, Web Logic etc.
-                    </p>
-                 </div>
+                 </div>                 
               </div>
             </div>
           </div>
-        </div>
       </section>
     </article>    
-  </div>
+    </div>
   </div>  
   <aside class="sidebar">
     <div class="fixed">
@@ -464,116 +418,6 @@
 <script src="__STATIC__/public/bs/js/jquery.ias.js"></script> 
 <script src="__STATIC__/public/bs/js/scripts.js"></script>
     <script>
-     var initCropperInModal = function(img, input, modal){
-            var $image = img;
-            var $inputImage = input;
-            var $modal = modal;
-            var options = {
-                aspectRatio: 1, // 纵横比
-                viewMode: 2,
-                preview: '.img-preview' // 预览图的class名
-            };
-            // 模态框隐藏后需要保存的数据对象
-            var saveData = {};
-            var URL = window.URL || window.webkitURL;
-            var blobURL;
-            $modal.on('show.bs.modal',function () {
-                // 如果打开模态框时没有选择文件就点击“打开图片”按钮
-                if(!$inputImage.val()){
-                    $inputImage.click();
-                }
-            }).on('shown.bs.modal', function () {
-                // 重新创建
-                $image.cropper( $.extend(options, {
-                    ready: function () {
-                        // 当剪切界面就绪后，恢复数据
-                        if(saveData.canvasData){
-                            $image.cropper('setCanvasData', saveData.canvasData);
-                            $image.cropper('setCropBoxData', saveData.cropBoxData);
-                        }
-                    }
-                }));
-            }).on('hidden.bs.modal', function () {
-                // 保存相关数据
-                saveData.cropBoxData = $image.cropper('getCropBoxData');
-                saveData.canvasData = $image.cropper('getCanvasData');
-                // 销毁并将图片保存在img标签
-                $image.cropper('destroy').attr('src',blobURL);
-            });
-            if (URL) {
-                $inputImage.change(function() {
-                    var files = this.files;
-                    var file;
-                    if (!$image.data('cropper')) {
-                        return;
-                    }
-                    if (files && files.length) {
-                        file = files[0];
-                        if (/^image\/\w+$/.test(file.type)) {
-
-                            if(blobURL) {
-                                URL.revokeObjectURL(blobURL);
-                            }
-                            blobURL = URL.createObjectURL(file);
-
-                            // 重置cropper，将图像替换
-                            $image.cropper('reset').cropper('replace', blobURL);
-
-                            // 选择文件后，显示和隐藏相关内容
-                            $('.img-container').removeClass('hidden');
-                            $('.img-preview-box').removeClass('hidden');
-                            $('#changeModal .disabled').removeAttr('disabled').removeClass('disabled');
-                            $('#changeModal .tip-info').addClass('hidden');
-
-                        } else {
-                            window.alert('请选择一个图像文件！');
-                        }
-                    }
-                });
-            } else {
-                $inputImage.prop('disabled', true).addClass('disabled');
-            }
-        }
-  
-
-    var sendPhoto = function(){
-        $('#photo').cropper('getCroppedCanvas',{
-            width:300,
-            height:300
-        }).toBlob(function(blob){
-            // 转化为blob后更改src属性，隐藏模态框
-            $('#user-photo').attr('src',URL.createObjectURL(blob));
-            $('#changeModal').modal('hide');
-        });
-    }
-
-    $(function(){
-        initCropperInModal($('#photo'),$('#photoInput'),$('#changeModal'));
-        // 选项卡
-      $('#myTab li a').click(function(){
-        var a = $(this).find('a').attr('href');
-        $(a).show().siblings().hide();
-      })
-
-    });
-
-     var motai=document.getElementById('mo')
-     var moimg=document.getElementById("moimg")
-     var realimg=document.getElementById("user-photo")
-     var caption=document.getElementById("caption")
-     realimg.onclick=function(){
-      motai.style.display="block"
-      moimg.src=this.src
-      caption.innerHTML=this.alt
-     }
-     var span=document.getElementById("close");
-     span.onclick=function(){
-      $('#motai').hide(1000);        
-     }
-     motai.onclick=function(){
-      $('#mo').hide();
-     }
-
      // li浮动效果
      var oLi = $('.intro li');
      var activeIndex = 0;
@@ -621,6 +465,34 @@
               }
             }
         })     
+    })    
+    $('#focusFollowing').click(function(){
+       var followingFlag = 0;
+       var focusUserId = $('#focusFollowing').attr('data');
+       if($('#focusFollowing').val()=='关注'){
+          followingFlag = 1;                  
+       }else{
+          followingFlag = 0;
+       }
+       $.ajax({
+            url: 'addFollowing',
+            type:'POST',
+            data:{
+              'followingFlag': followingFlag,
+              'focusUserId': focusUserId
+            },
+            success:function(res){
+              if(res == 0){
+                  if(followingFlag){
+                    $('#focusFollowing').val('取消关注');
+                  }else{
+                    $('#focusFollowing').val('关注');          
+                  }
+              }else{
+                alert('关注失败！')
+              }
+            }
+          })
     })
     </script>
 </body>

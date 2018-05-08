@@ -60,7 +60,8 @@ class ArticleCheck extends Controller
         ]);
         if($art->save()){
           $id=$_POST['id'];
-          $res=ArticleCheckModel::destroy(['id'=>$id]);            
+          $res=ArticleCheckModel::destroy(['id'=>$id]); 
+          Db::table("user")->where("id",$user_id)->setInc("articlePubnum");           
           $this->redirect('index');
         }
         else{
