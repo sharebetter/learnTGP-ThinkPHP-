@@ -9,6 +9,7 @@ use \app\index\model\GoodTalk as GoodTalkModel;
 use \app\index\model\DailyTalk as DailyTalkModel;
 use \app\index\model\Notice as NoticeModel;
 use \app\index\model\User as UserModel;
+use \app\index\model\Message as MessageModel;
 class UserInfo extends Controller
 {
     public function index()
@@ -17,7 +18,7 @@ class UserInfo extends Controller
         $userId = Session::get('user_id');
         $userInfo=UserModel::get($userId)->getData();
         $this->assign('userInfo',$userInfo);
-
+        $collectionArr = explode(",", $userInfo['article_collection']);
         $followingArr = explode(",", $userInfo['following'] );
         $followingInfoArr =[];
         foreach ($followingArr as $key => $val) {
@@ -25,6 +26,20 @@ class UserInfo extends Controller
                $followingInfoArr[$key] = UserModel::get($val)->getData();
             }
          }
+        $collectionInfoArr =[];
+        foreach ($collectionArr as $key => $val) {
+            if(strlen($val)>0){
+                $getCollectionInfo = Db::view('article','*')
+                ->view('banner','name','article.banner_id=banner.id')
+                ->view('user','img,username','user.id=article.user_id')
+                ->where('article.id',$val)
+                ->order('id','DESC')
+                ->select();
+                $collectionInfoArr[$key] = $getCollectionInfo[0];
+                $collectionInfoArr[$key]['has_goods'] = 1;
+            }
+         }
+        $this->assign('collectionInfoArr',$collectionInfoArr);
         $this->assign('followingInfoArr',$followingInfoArr);
 
         $myArticleInfoArr=Db::view('article','*')
@@ -46,7 +61,7 @@ class UserInfo extends Controller
                     }
                 }
                 $myArticleInfoArr[$key]['has_goods'] = $has_goods;
-            } 
+            }
         }else{
             foreach ($myArticleInfoArr as $key => $value) {
                  $myArticleInfoArr[$key]['has_goods'] = 0;
@@ -54,20 +69,75 @@ class UserInfo extends Controller
         }
         $this->assign('myArticleInfoArr',$myArticleInfoArr);
 
+        // message
+        $messageInfo =Db::view('message','*')
+        ->view('user','img,username','user.id=message.send_userid')
+        ->where('message.receive_userid',$userId)
+        ->order('id','DESC')
+        ->select();
+        // dump($messageInfo);
+        // exit;
+        $this->assign('messageList',$messageInfo);
+
         return view();
+    }
+    public function setHasRead () {
+        $messageId = $_POST['messageId'];
+        $MessageModel =new MessageModel();
+        $res=$MessageModel->save(
+            [
+                'is_read' => 1
+            ],["id"=>$messageId]
+        );
+        if($res){
+            echo "0";
+        }else{
+            echo "1";
+        }
     }
     public function otherInfo($otherUserid){
         include 'public/article.php';
         $userId = $otherUserid;
+        $user_id = Session::get('user_id');
+        if($user_id == $userId){
+            $this->redirect('index');
+        }
         $userInfo=UserModel::get($userId)->getData();
         $this->assign('userInfo',$userInfo);
+        $collectionArr = explode(",", $userInfo['article_collection']);
         $followingArr = explode(",", $userInfo['following'] );
         $followingInfoArr =[];
+        $collectionInfoArr =[];
         foreach ($followingArr as $key => $val) {
             if(strlen($val)>0){
                $followingInfoArr[$key] = UserModel::get($val)->getData();
             }
          }
+        foreach ($collectionArr as $key => $val) {
+            if(strlen($val)>0){
+                $getCollectionInfo = Db::view('article','*')
+                ->view('banner','name','article.banner_id=banner.id')
+                ->view('user','img,username','user.id=article.user_id')
+                ->where('article.id',$val)
+                ->order('id','DESC')
+                ->select();
+                $collectionInfoArr[$key] = $getCollectionInfo[0];
+            }
+        }
+        foreach ($collectionInfoArr as $key => $value) {
+            $has_goods = 0;
+            if(strlen($value['has_goods_userid'])>0){
+                $usersArr = explode(",", $value['has_goods_userid'] );
+                foreach ($usersArr as $key2 => $val) {
+                    if($user_id == $val){
+                        $has_goods = 1;
+                    }
+                }
+            }
+            $collectionInfoArr[$key]['has_goods'] = $has_goods;
+        }
+
+        $this->assign('collectionInfoArr',$collectionInfoArr);
         $this->assign('followingInfoArr',$followingInfoArr);
         // 判断是否关注过
         $myInfo=UserModel::get(Session::get('user_id'))->getData();
@@ -78,15 +148,14 @@ class UserInfo extends Controller
         }
         $this->assign('myFlollowingFlag',$myFlollowingFlag);
 
-        $myArticleInfoArr=Db::view('article','*')
+        $otherArticleInfoArr=Db::view('article','*')
         ->view('banner','name','article.banner_id=banner.id')
         ->view('user','img,username','user.id=article.user_id')
         ->where('article.user_id',$userId)
         ->order('id','DESC')
         ->select();
-        $user_id = Session::get('user_id');
         if(isset($user_id)){
-            foreach ($myArticleInfoArr as $key => $value) {
+            foreach ($otherArticleInfoArr as $key => $value) {
                 $has_goods = 0;
                 if(strlen($value['has_goods_userid'])>0){
                     $usersArr = explode(",", $value['has_goods_userid'] );
@@ -96,15 +165,15 @@ class UserInfo extends Controller
                         }
                     }
                 }
-                $myArticleInfoArr[$key]['has_goods'] = $has_goods;
-            } 
+                $otherArticleInfoArr[$key]['has_goods'] = $has_goods;
+            }
         }else{
-            foreach ($myArticleInfoArr as $key => $value) {
-                 $myArticleInfoArr[$key]['has_goods'] = 0;
+            foreach ($otherArticleInfoArr as $key => $value) {
+                 $otherArticleInfoArr[$key]['has_goods'] = 0;
             }
         }
-        $this->assign('myArticleInfoArr',$myArticleInfoArr);
-        return view();        
+        $this->assign('otherArticleInfoArr',$otherArticleInfoArr);
+        return view();
     }
     public function addFollowing () {
         $focusUserId = $_POST['focusUserId'];
@@ -118,7 +187,7 @@ class UserInfo extends Controller
 
             }else{
                 $userInfo['following']=$userInfo['following'].','.$focusUserId;
-            }            
+            }
         }else{
             $followingUserArr = explode(',', $userInfo['following']);
             $userInfo['following'] = '';
@@ -128,7 +197,7 @@ class UserInfo extends Controller
                 }
             }
         }
-       
+
         $res=$UserModel->save(
             [
                 'following' => $userInfo['following']
@@ -138,6 +207,23 @@ class UserInfo extends Controller
            echo "0";
         }else{
            echo "1";
+        }
+    }
+    public function sendMessage () {
+        $messageContent = $_POST['messageContent'];
+        $messageToUserId = $_POST['messageToUserId'];
+        $user_id = Session::get('user_id');
+        $time=time();
+        $messageModel=new MessageModel([
+            "message_content"=>$messageContent,
+            "send_userid"=>$user_id,
+            "message_sendtime"=>$time,
+            "receive_userid"=>$messageToUserId
+        ]);
+        if($messageModel->save()){
+          echo "0";
+        }else{
+          echo "1";
         }
     }
     public function articleSelect () {
@@ -189,10 +275,10 @@ class UserInfo extends Controller
           $userId=Session::get('user_id');
           $username = $_POST['username'];
           $password = $_POST['password'];
-          $change=false;    
+          $change=false;
           if($password!="######"){
             $password = $_POST['password'];
-            $change=true;   
+            $change=true;
           }
           $oldimg='static/'.Session::get('user_img');
           if(!isset($dfile)){
@@ -202,13 +288,13 @@ class UserInfo extends Controller
                         "username"=>$username,
                         "password"=>md5($password)
                     ],["id"=>$userId]
-                );             
+                );
              }else{
                 $res=$user->save(
                     [
-                        "username"=>$username                        
+                        "username"=>$username
                     ],["id"=>$userId]
-                );                                
+                );
              }
           }else{
             if($change){
@@ -218,23 +304,23 @@ class UserInfo extends Controller
                         "img"=>$ufile,
                         "password"=>md5($password)
                     ],["id"=>$userId]
-                );                
+                );
             }else{
                $res=$user->save(
                     [
                         "username"=>$username,
-                        "img"=>$ufile                        
+                        "img"=>$ufile
                     ],["id"=>$userId]
                 );
-            }   
-             Session::set('user_img',$ufile);        
+            }
+             Session::set('user_img',$ufile);
              unlink($oldimg);
           }
         if($res){
             Session::set('user_name',$username);
-            echo "<script>alert('修改成功！')</script>";             
+            echo "<script>alert('修改成功！')</script>";
         }else{
-            echo "<script>alert('修改失败！')</script>"; 
+            echo "<script>alert('修改失败！')</script>";
         }
         echo '<script>location="index"</script>';
     }

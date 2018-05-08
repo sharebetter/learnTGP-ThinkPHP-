@@ -85,7 +85,7 @@
   z-index: 7;
  }
  #moimg{
-  display: block;  
+  display: block;
   width: 50%;
   margin:5% auto;
   max-width: 750px;
@@ -184,6 +184,25 @@
  .tab-content{
   margin-top:30px;
  }
+ #messages .messageList{
+    border-top:1px solid #EAEAEA;
+ }
+ .message_show{
+   margin-top:20px;
+ }
+ .message_content{
+   margin-top: 10px;
+   width:80%;
+   min-height: 70px;
+   height: auto;
+   margin: 10px auto;
+   border: 1px solid rgb(243, 225, 143);
+   border-radius: 10px;
+   text-indent: 10px;
+ }
+ .pager li .active{
+   background: #ddd !important;
+ }
 </style>
 </head>
 <body class="user-select">
@@ -203,7 +222,7 @@
            {/if}
           {volist name="bannerArr" id="value"}
             {if condition="$Request.session.banner_id==$value.id"}
-              <li class="active"><a href="{:url('index/indexClass')}?bannerId={$value.id}">{$value['name']}</a></li>             
+              <li class="active"><a href="{:url('index/indexClass')}?bannerId={$value.id}">{$value['name']}</a></li>
              {else/}
               <li><a href="{:url('index/indexClass')}?bannerId={$value.id}">{$value['name']}</a></li>
             {/if}
@@ -228,17 +247,17 @@
     <section class="container-fluid">
         <div class="row">
           <div class="col-sm-12 col-md-12 col-lg-12 main" id="main">
-            <div class="row">              
+            <div class="row">
               <form action="{:url('update')}" method='post' enctype='multipart/form-data' class="add-article-form">
                 <div class="col-md-12 text-center">
-                  <h1 class="page-header text-center">个人中心</h1>                  
+                  <h1 class="page-header text-center">个人中心</h1>
                  <div class="headimg">
                        <a title=""><img class="thumb" style="width: 75px;height: 75px;border-radius: 50%" alt="" src="__STATIC__/{$userInfo['img']}" id="user-photo"></a>
                        <p style="margin-top:20px"></p>
                         <!-- <label for="">更改头像:</label>       -->
                         <!-- <button type="button" class="btn btn-primary"  data-target="#changeModal" data-toggle="modal">头像修改</button> -->
                         <!-- <input type="file" name="img" id="" style='margin:8px 40%;'> -->
-                 </div>     
+                 </div>
                  <div class="modal fade" id="changeModal" tabindex="-1" role="dialog" aria-hidden="true">
                   <div class="modal-dialog">
                       <div class="modal-content">
@@ -283,7 +302,7 @@
                  <!-- 头像模态框 -->
                  <div class="motai text-center" id="mo">
                    <span class="close" id="close">×</span>
-                   <img class="motaiimg" id="moimg">                   
+                   <img class="motaiimg" id="moimg">
                    <div id="caption"></div>
                    <button type="button" class="btn btn-primary"  data-target="#changeModal" data-toggle="modal">头像修改</button>
                  </div>
@@ -294,14 +313,14 @@
                   <div class="form-group" style='width: 30%;margin:0 auto'>
                     <label for="">密码:</label>
                     <input type="password" class="form-control" name='password' required autocomplete="off" value="######">
-                  </div>                                          
+                  </div>
                   <div class="form-group" style='margin-top:20px;'>
                     <input type="submit" class='btn btn-primary' value="提交">
                     <input type="reset" class='btn btn-danger'>
                   </div>
                 </div>
               </form>
-              <ul class = "intro" id="myTab"> 
+              <ul class = "intro" id="myTab">
                 <li class="active"><a href="#articlePub" role="tab" data-toggle="tab"><img src="../../static/public/bs/images/icon/blog.png"/><div class="writting">发布的文章</div></a></li>
                 <li><a href="#getLove" role="tab" data-toggle="tab"><img src="../../static/public/bs/images/icon/love.png"/><div class="writting">我的关注</div></a></li>
                 <li><a href="#collections" role="tab" data-toggle="tab"><img src="../../static/public/bs/images/icon/collection.png"/><div class="writting">我的收藏</div></a></li>
@@ -332,36 +351,93 @@
                           <a class="img-responsive">{$value.content|htmlspecialchars_decode|mb_substr=0,3000,'utf-8'}</a>
                           <p class="note">
                             <a style='float:right;margin-right:70px' href="{:url('/index/index/indexReadMore',['articleId'=>$value.id])}">查看更多>></a></p>
-                              
+
                       </article>
                     {/volist}
                  </div>
                  <div class="tab-pane fade text-center" id="getLove">
-                    <ul class="following">                  
+                    <ul class="following">
                       {volist name="$followingInfoArr" id="value"}
                           <li><a class="focus" href="{:url('otherInfo')}?otherUserid={$value.id}"><img class="thumb" src="__STATIC__/{$value['img']}" alt=""><p>{$value['username']}</p></a></li>
                       {/volist}
-                    </ul>                    
+                    </ul>
                  </div>
                  <div class="tab-pane fade" id="collections">
-                    <p>jMeter is an Open Source testing software. It is 100% pure 
-                    Java application for load and performance testing.</p>
+                    {volist name="collectionInfoArr" id="value"}
+                      <article class="excerpt excerpt-1"><a class="focus" href="{:url('otherInfo')}?otherUserid={$value.user_id}"><img class="thumb" src="__STATIC__/{$value['img']}" alt="">{$value['username']}</a>
+                        <header>
+                          <a class='cat' href="{:url('/index/index/indexClass')}?bannerId={$value.banner_id}">{$value.name}<i></i></a>
+                          <h2><a href="{:url('/index/index/indexReadMore')}?articleId={$value.id}" title=''>{$value.title}</a></h2>
+                        </header>
+                        <span class="get_article_id" hidden>{$value.id}</span>
+                        <p class="meta">
+                          <time class="time"><i class="glyphicon glyphicon-time"></i>{$value['time']|date="Y-m-d H:i:s",###}</time></br></br>
+                          <span class="views"><i class="glyphicon glyphicon-eye-open"></i> 共<span class="articleView">{$value.views}</span>人围观</span><span class="comment" data-toggle='modal'><i class="glyphicon glyphicon-comment"></i> 共<span class="commentTimes">{$value.comment_times}</span>条评论</span>
+                          <span class="goods">
+                            {if condition="$value.has_goods == 1"}
+                                <i class="good"><a class="show_good_times">{$value.good_times}</a></i>
+                                {else}
+                                <i class="notgood"><a class="show_good_times">{$value.good_times}</a></i>
+                            {/if}
+                          </span>
+                          </p></br>
+                          <a class="cat" href="javascript:">正文<i></i></a>
+                          <a class="img-responsive">{$value.content|htmlspecialchars_decode|mb_substr=0,3000,'utf-8'}</a>
+                          <p class="note">
+                            <a style='float:right;margin-right:70px' href="{:url('/index/index/indexReadMore',['articleId'=>$value.id])}">查看更多>></a></p>
+
+                      </article>
+                  {/volist}
                  </div>
                  <div class="tab-pane fade" id="messages">
-                    <p>Enterprise Java Beans (EJB) is a development architecture 
-                       for building highly scalable and robust enterprise level    
-                       applications to be deployed on J2EE compliant 
-                       Application Server such as JBOSS, Web Logic etc.
-                    </p>
+                    <div class="messageList">
+                        <ul class="pager">
+                          <li><a class="active" href="#hasReadMessage" data-toggle="tab">未读</a></li>
+                          <li><a href="#notReadMessage" data-toggle="tab">已读</a></li>
+                        </ul>
+                    </div>
+                    <div id="myMessageTab" class="tab-content">
+                        <div class="tab-pane fade in active" id="hasReadMessage">
+                            {volist name="messageList" id="value"}
+                              {if condition="$value.is_read == 0"}
+                                <article class="excerpt excerpt-1"><a class="focus" href="{:url('UserInfo/otherInfo')}?otherUserid={$value.send_userid}" ><img class="thumb" src="__STATIC__/{$value['img']}" alt="">{$value['username']}</a>
+                                  <p class="meta message_show">
+                                    <time class="time"><i class="glyphicon glyphicon-time"></i>{$value['message_sendtime']|date="Y-m-d H:i:s",###}</time>
+                                    </p>
+                                    <a class="cat" href="javascript:">Message:<i></i></a>
+                                    <p class="img-responsive message_content">{$value.message_content}</p>
+                                    <p class="note">
+                                      <a type="button" class="btn btn-success" style='float:right;margin-right:10%' href="otherinfo?otherUserid={$value.send_userid}">回复</a>
+                                      <a type="button" class="btn btn-warning" data="{$value.id}" style='float:right;margin-right:10%'>标记为已读</a>
+                                </article>
+                              {/if}
+                            {/volist}
+                         </div>
+                        <div class="tab-pane fade" id="notReadMessage">
+                            {volist name="messageList" id="value"}
+                              {if condition="$value.is_read == 1"}
+                                <article class="excerpt excerpt-1"><a class="focus" href="{:url('UserInfo/otherInfo')}?otherUserid={$value.send_userid}"><img class="thumb" src="__STATIC__/{$value['img']}" alt="">{$value['username']}</a>
+                                  <p class="meta message_show">
+                                    <time class="time"><i class="glyphicon glyphicon-time"></i>{$value['message_sendtime']|date="Y-m-d H:i:s",###}</time>
+                                    </p>
+                                    <a class="cat" href="javascript:">Message:<i></i></a>
+                                    <p class="img-responsive message_content">{$value.message_content}</p>
+                                    <p class="note">
+                                      <input type="button" class="btn btn-success" style='float:right;margin-right:70px' href="{:url('/index/index/indexReadMore',['articleId'=>$value.id])}" value="回复"></p>
+                                </article>
+                              {/if}
+                            {/volist}
+                        </div>
+                    </div>
                  </div>
               </div>
             </div>
           </div>
         </div>
       </section>
-    </article>    
+    </article>
   </div>
-  </div>  
+  </div>
   <aside class="sidebar">
     <div class="fixed">
       <div class="widget widget-tabs">
@@ -372,13 +448,13 @@
         </ul>
         <div class="tab-content">
           <div role="tabpanel" class="tab-pane notice active" id="notice">
-            <ul>         
+            <ul>
                 {volist name="noticeArr" id="value"}
                     <li>
                       <time>{$value['time']|date="m-d",###}</time>
                       <a data-toggle='modal' data-target='#noticeModal'>{$value['content']}</a>
                     </li>
-                {/volist}               
+                {/volist}
             </ul>
           </div>
           <div role="tabpanel" class="tab-pane centre" id="centre">
@@ -407,7 +483,7 @@
           <p style="line-height: 22px">{$daily_talkArr['content']}</p>
         </div>
       </div>
-    </div>    
+    </div>
     <div class="widget widget_hot">
       <h3>热门文章</h3>
       <ul>
@@ -421,7 +497,7 @@
               {/if}
               {$value.good_times}</span>
              </a></li>
-          {/volist}               
+          {/volist}
       </ul>
     </div>
   </aside>
@@ -439,12 +515,12 @@
     <div class="modal-content">
       <div class="modal-header">
         <div class="close" data-dismiss='modal'>&times;</div>
-        <h3>网站公告</h3>    
+        <h3>网站公告</h3>
       </div>
       <div class="modal-body">
         <div class="tab-content">
         <div role="tabpanel" class="tab-pane notice active" id="notice">
-        <ul>            
+        <ul>
           {volist name="noticeArr" id="value"}
             <li style='color:#999999;list-style: binary;margin-left:10px'>
               <p style='color:#999999;width:520px;'> {$value['content']}</p>
@@ -457,11 +533,11 @@
       <div class="modal-footer">
         <button class='btn btn-primary' data-dismiss='modal'>我知道了</button>          </div>
     </div>
-  </div>  
+  </div>
 </div>
 <script src="https://cdn.bootcss.com/cropper/3.1.3/cropper.min.js"></script>
-<script src="__STATIC__/public/bs/js/bootstrap.min.js"></script> 
-<script src="__STATIC__/public/bs/js/jquery.ias.js"></script> 
+<script src="__STATIC__/public/bs/js/bootstrap.min.js"></script>
+<script src="__STATIC__/public/bs/js/jquery.ias.js"></script>
 <script src="__STATIC__/public/bs/js/scripts.js"></script>
     <script>
      var initCropperInModal = function(img, input, modal){
@@ -534,7 +610,7 @@
                 $inputImage.prop('disabled', true).addClass('disabled');
             }
         }
-  
+
 
     var sendPhoto = function(){
         $('#photo').cropper('getCroppedCanvas',{
@@ -554,7 +630,6 @@
         var a = $(this).find('a').attr('href');
         $(a).show().siblings().hide();
       })
-
     });
 
      var motai=document.getElementById('mo')
@@ -568,7 +643,7 @@
      }
      var span=document.getElementById("close");
      span.onclick=function(){
-      $('#motai').hide(1000);        
+      $('#motai').hide(1000);
      }
      motai.onclick=function(){
       $('#mo').hide();
@@ -589,7 +664,34 @@
       activeIndex = $(this).index();
        $(this).addClass('over').siblings().removeClass('over');
      })
-
+    //已读和未读
+    $('.pager li').click(function(){
+        $(this).find('a').addClass('active');
+        $(this).siblings().find('a').removeClass('active');
+    })
+    // 标记为已读
+    $('#hasReadMessage .btn-warning').click(function(){
+      var messageIndex = $(this).index('.btn-warning');
+      var messageId = $(this).attr('data');
+      var _this = $(this);
+      $.ajax({
+        url: 'setHasRead',
+            type:'POST',
+            data:{
+              'messageId': messageId
+            },
+            success:function(res){
+              if(res == '0'){
+                _this.hide();
+                $('#hasReadMessage article').eq(messageIndex).hide();
+                var hasReadMessageHtml ="<article class='excerpt excerpt-1'>"+$('#hasReadMessage article').eq(messageIndex).html()+"</article>";
+                $('#notReadMessage').html(hasReadMessageHtml+$('#notReadMessage').html());
+              }else{
+                console.log('标记已读失败！')
+              }
+            }
+      })
+    })
      // 点赞
     $('.goods').click(function(){
         var goodsIndex = $(this).index('.meta .goods');
@@ -620,7 +722,7 @@
                 console.log('点赞失败！')
               }
             }
-        })     
+        })
     })
     </script>
 </body>
