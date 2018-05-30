@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>学习交流平台</title>
+<link rel="stylesheet" type="text/css" href="__STATIC__/public/bs/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="__STATIC__/public/bs/css/nprogress.css">
+<link rel="stylesheet" type="text/css" href="__STATIC__/public/bs/css/style.css">
+<!-- <link rel="stylesheet" type="text/css" href="__STATIC__/public/bs/css/font-awesome.min.css"> -->
+<link rel="apple-touch-icon-precomposed" href="__STATIC__/public/bs/images/icon/icon.png">
+<link rel="shortcut icon" href="__STATIC__/public/bs/images/icon/favicon.ico">
+<script src="__STATIC__/public/bs/js/jquery-2.1.4.min.js"></script>
+<style>
+  .content{
+    margin:0 auto;
+  }
+  .head{
+    width: 50px;
+    height:50px;
+    border-radius: 50%
+  }
+</style>
+<body class="user-select">
+  <header class="header">
+    <nav class="navbar navbar-default" id="navbar">
+      <div class="container">
+        <div class="header-topbar link-border">
+          <ul class="site-nav hidden-xs topmenu">
+            <li><a href="tags.html">标签云</a></li>
+            <li><a href="readers.html" rel="nofollow">读者墙</a></li>
+            <li><a href="links.html" rel="nofollow">友情链接</a></li>
+            <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" rel="nofollow">关注本站 <span class="caret"></span></a>
+              <ul class="dropdown-menu header-topbar-dropdown-menu">
+                <li><a data-toggle="modal" data-target="#WeChat" rel="nofollow"><i class="fa fa-weixin"></i> 微信</a></li>
+                <li><a href="#" rel="nofollow"><i class="fa fa-weibo"></i> 微博</a></li>
+                <li><a data-toggle="modal" data-target="#areDeveloping" rel="nofollow"><i class="fa fa-rss"></i> RSS</a></li>
+              </ul>
+            </li>
+          </ul>
+          <div id="whetherLogin" style='margin-bottom: -10px'>
+                <h4>欢迎<a style='margin-left: 15px' href="{:url('userInfo/index')}" class="login">{$Request.session.user_name}<img class='head' src="__STATIC__/{$Request.session.user_img}"></a><a style='margin-left: 15px' class="login" id='loginOut'> 退出</a></h4><a class="username" hidden>{$Request.session.user_name}</a><a class="user_img" hidden>{$Request.session.user_img}</a>
+          </div>
+          </div>
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#header-navbar" aria-expanded="false"> <span class="sr-only"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+          <h1 class="logo hvr-bounce-in"><a href="{:url('index/index')}" title=""><img src="__STATIC__/public/bs/images/logo.png" alt=""></a></h1>
+        </div>
+      </div>
+    </nav>
+  </header>
+<section class="container">
+    <div class="content-wrap">
+      <div class="content">
+          <article class='article' id="modalHide" {if condition="!$Request.session.user_id"} href='#loginModal'{/if} data-toggle='modal'>
+            <section class="container-fluid">
+              <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12 main" id="main">
+                  <div class="row">
+                    <form action="{:url('updateArticle')}" method="post" class="add-article-form">
+                      <div class="col-md-12">
+                        <h1 class="page-header">文章编辑</h1>
+                        <div class="form-group">
+                          <label for="article-title" class="sr-only">标题</label>
+                          <input type="text" style="width:30%;min-width:150px" id="article-title" name="title" class="form-control" placeholder="在此处输入标题" required autocomplete="off" value="{$article['title']}">
+                          <input type="hidden" name="id" value="{$article['id']}"/>
+                        </div>
+                        <div class="form-group">
+                          <select name="banner_id" class="form-control" style="width:20%;min-width: 150px">
+                              {volist name="bannerArr" id="val"}
+                                {if condition="$val.id == $article['banner_id']"}
+                                  <option value="{$val.id}" selected>{$val.name}</option>
+                                  {else/}
+                                    <option value="{$val.id}">{$val.name}</option>
+                                {/if}
+                              {/volist}
+                          </select>
+                        </div>
+                        <div class="form-group">
+                          <label for="article-content" class="sr-only">内容</label>
+                          <script id="article-content" name="content" type="text/plain" style="min-height: 170px;">{$article['content']}</script>
+                        </div>
+
+                         <div class="add-article-box-footer" style="margin-bottom: 10px">
+                            <button class="btn btn-primary" type="submit" name="submit" >提交</button>
+                            <input type="reset" class='btn btn-danger'>
+                         </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </article>
+      </div>
+    </div>
+  </section>
+</body>
+<script src="__STATIC__/public/lib/ueditor/ueditor.config.js"></script>
+<script src="__STATIC__/public/lib/ueditor/ueditor.all.min.js"> </script>
+<script src="__STATIC__/public/lib/ueditor/lang/zh-cn/zh-cn.js"></script>
+<script id="uploadEditor" type="text/plain" style="display:none;"></script>
+<!-- Editor -->
+<script type="text/javascript">
+var editor = UE.getEditor('article-content');
+// window.onresize=function(){
+//     window.location.reload();
+// }
+var _uploadEditor;
+$(function () {
+    //重新实例化一个编辑器，防止在上面的editor编辑器中显示上传的图片或者文件
+    _uploadEditor = UE.getEditor('uploadEditor');
+    _uploadEditor.ready(function () {
+        //设置编辑器不可用
+        //_uploadEditor.setDisabled();
+        //隐藏编辑器，因为不会用到这个编辑器实例，所以要隐藏
+        _uploadEditor.hide();
+        //侦听图片上传
+        _uploadEditor.addListener('beforeInsertImage', function (t, arg) {
+            //将地址赋值给相应的input,只去第一张图片的路径
+            $("#pictureUpload").attr("value", arg[0].src);
+            //图片预览
+            //$("#imgPreview").attr("src", arg[0].src);
+        })
+        //侦听文件上传，取上传文件列表中第一个上传的文件的路径
+        _uploadEditor.addListener('afterUpfile', function (t, arg) {
+            $("#fileUpload").attr("value", _uploadEditor.options.filePath + arg[0].url);
+        })
+    });
+});
+//弹出图片上传的对话框
+$('#upImage').click(function () {
+    var myImage = _uploadEditor.getDialog("insertimage");
+    myImage.open();
+});
+//弹出文件上传的对话框
+function upFiles() {
+    var myFiles = _uploadEditor.getDialog("attachment");
+    myFiles.open();
+}
+</script>

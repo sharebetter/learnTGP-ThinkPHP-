@@ -21,24 +21,31 @@ class UserInfo extends Controller
         $collectionArr = explode(",", $userInfo['article_collection']);
         $followingArr = explode(",", $userInfo['following'] );
         $followingInfoArr =[];
-        foreach ($followingArr as $key => $val) {
-            if(strlen($val)>0){
-               $followingInfoArr[$key] = UserModel::get($val)->getData();
-            }
-         }
+        if(strlen($userInfo['following'])>0){
+            foreach ($followingArr as $key => $val) {
+                if(strlen($val)>0){
+                   $followingInfoArr[$key] = UserModel::get($val)->getData();
+                }
+             }
+        }
         $collectionInfoArr =[];
-        foreach ($collectionArr as $key => $val) {
-            if(strlen($val)>0){
-                $getCollectionInfo = Db::view('article','*')
-                ->view('banner','name','article.banner_id=banner.id')
-                ->view('user','img,username','user.id=article.user_id')
-                ->where('article.id',$val)
-                ->order('id','DESC')
-                ->select();
-                $collectionInfoArr[$key] = $getCollectionInfo[0];
-                $collectionInfoArr[$key]['has_goods'] = 1;
-            }
-         }
+        if(strlen($userInfo['article_collection'])>0){
+            // dump($collectionArr);
+            foreach ($collectionArr as $key => $val) {
+                if(strlen($val)>0){
+                    $getCollectionInfo = Db::view('article','*')
+                    ->view('banner','name','article.banner_id=banner.id')
+                    ->view('user','img,username','user.id=article.user_id')
+                    ->where('article.id',$val)
+                    ->order('id','DESC')
+                    ->select();
+                    if(sizeof($getCollectionInfo)>0){
+                        $collectionInfoArr[$key] = $getCollectionInfo[0];
+                        $collectionInfoArr[$key]['has_goods'] = 1;
+                    }
+                }
+             }
+        }
         $this->assign('collectionInfoArr',$collectionInfoArr);
         $this->assign('followingInfoArr',$followingInfoArr);
 
@@ -323,5 +330,49 @@ class UserInfo extends Controller
             echo "<script>alert('修改失败！')</script>";
         }
         echo '<script>location="index"</script>';
+    }
+    public function articleEdit ($articleId) {
+        $banner = BannerModel::all(function($query){
+            $query->where("id","<",5)
+               ->whereOr("id",">",5)
+            ;
+        });
+        $bannerArr=[];
+        foreach ($banner as $key => $value) {
+            array_push($bannerArr, $value->toArray());
+        }
+        // dump($bannerArr);
+        // exit();
+        $this->assign('bannerArr',$bannerArr);
+
+        $article=Db::view('article',"*")
+            ->view('banner','name','article.banner_id=banner.id')
+            ->where('article.id','=',$articleId)
+            ->select();
+        $article[0]['content']=htmlspecialchars_decode($article[0]['content']);
+        $this->assign('article',$article[0]);
+        return view();
+    }
+    public function updateArticle()
+    {
+        $title=$_POST['title'];
+        $article_id=$_POST['id'];
+        $banner_id=$_POST['banner_id'];
+        $content=addslashes(htmlspecialchars($_POST['content']));
+        $time=time();
+        $article=new ArticleModel();
+        $res=$article->save(
+                [
+                  "title"=>$title,
+                  "time"=>$time,
+                  "banner_id"=>$banner_id,
+                  "content"=>$content
+                ],["id"=>$article_id]
+            );
+        if($res){
+            $this->redirect('index');
+        }else{
+            echo "<script>alert('文章修改失败！')</script>";
+        }
     }
 }

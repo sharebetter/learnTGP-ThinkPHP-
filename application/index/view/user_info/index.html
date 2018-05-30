@@ -333,7 +333,8 @@
                       <article class="excerpt excerpt-1"><a class="focus" ><img class="thumb" src="__STATIC__/{$value['img']}" alt="">{$value['username']}</a>
                         <header>
                            <a class='cat' href="{:url('/index/index/indexClass')}?bannerId={$value.banner_id}">{$value.name}<i></i></a>
-                           <h2><a href="{:url('/index/index/indexReadMore')}?articleId={$value.id}" title=''>{$value.title}</a></h2>
+                           <h2><a href="{:url('/index/index/indexReadMore')}?articleId={$value.id}" title=''>{$value.title}</a> </h2>
+                           <a href="{:url('/index/user_info/articleEdit')}?articleId={$value.id}" class="btn btn-success pull-right">编辑</a>
                         </header>
                         <span class="get_article_id" hidden>{$value.id}</span>
                         <p class="meta">

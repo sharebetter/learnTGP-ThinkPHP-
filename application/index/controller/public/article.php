@@ -16,7 +16,7 @@ use \app\index\model\User as UserModel;
             array_push($bannerArr, $value->toArray());
         }
         $this->assign('bannerArr',$bannerArr);
-        
+
         // 获取今日良言
         $good_talk =GoodTalkModel::select(function($query){
             $query-> limit(1)
@@ -28,7 +28,7 @@ use \app\index\model\User as UserModel;
         }
         $this->assign('good_talk',$good_talkArr[0]);
         // dump($good_talkArr);
-        
+
         // 网站公告
         $notices = NoticeModel::all(function($query){
             $query-> limit(5)
@@ -39,7 +39,7 @@ use \app\index\model\User as UserModel;
             array_push($noticeArr, $value->toArray());
         }
         $this->assign('noticeArr',$noticeArr);
-        
+
         //每日一句
         $daily_talk = DailyTalkModel::all(function($query){
             $query-> limit(1)
@@ -49,8 +49,8 @@ use \app\index\model\User as UserModel;
         foreach ($daily_talk as $key => $value) {
             array_push($daily_talkArr, $value->toArray());
         }
-        $this->assign('daily_talkArr',$daily_talkArr[0]);        
-    
+        $this->assign('daily_talkArr',$daily_talkArr[0]);
+
         //用户评论
         $commentArr=Db::view('comment',"*")
             ->view('article','time','article.id=comment.article_id')
@@ -59,17 +59,17 @@ use \app\index\model\User as UserModel;
         // dump ($commentArr);
         // exit;
         $this->assign('commentArr',$commentArr);
-        
+
         // 用户回复
         $replyArr=Db::view('comment',"*")
             ->view('reply_comment','*','reply_comment.comment_id=comment.id')
-            ->view('user','username','user.id=comment.user_id')
+            ->view('user','username','user.id=reply_comment.user_id')
             ->order('reply_comment.id','DESC')
             ->select();
         // dump($replyArr);
         // exit;
         $this->assign('replyArr',$replyArr);
-        
+
         // 热门文章
         $hotArticleArr=Db::view('article',"*")
             ->view('banner','name','article.banner_id=banner.id')
@@ -91,7 +91,7 @@ use \app\index\model\User as UserModel;
                     }
                 }
                 $hotArticleArr[$key]['has_goods'] = $has_goods;
-            } 
+            }
         }else{
             foreach ($hotArticleArr as $key => $value) {
                  $hotArticleArr[$key]['has_goods'] = 0;

@@ -99,7 +99,7 @@
         </ul>
         <div id="whetherLogin" style='margin-bottom: -10px'>
           {if condition="$Request.session.user_id"}
-             <h4>欢迎<a style='margin-left: 15px' href="{:url('userInfo/index')}" class="login">{$Request.session.user_name}<img class='head' src="__STATIC__/{$Request.session.user_img}"></a><a style='margin-left: 15px' class="login" id='loginOut'> 退出</a></h4><a class="username" hidden>{$Request.session.user_name}</a>
+             <h4>欢迎<a style='margin-left: 15px' href="{:url('userInfo/index')}" class="login">{$Request.session.user_name}<img class='head' src="__STATIC__/{$Request.session.user_img}"></a><a style='margin-left: 15px' class="login" id='loginOut'> 退出</a></h4><a class="username" hidden>{$Request.session.user_name}</a><a class="user_img" hidden>{$Request.session.user_img}</a>
             {else/}
                 <a data-toggle="modal" data-target="#loginModal" class="login" rel="nofollow">Hi,请登录</a>&nbsp;&nbsp;<a href='#mymodal' data-toggle='modal' class="register" rel="nofollow">我要注册</a>&nbsp;&nbsp;<a data-target="#passModal" data-toggle='modal' rel="nofollow">找回密码</a>
           {/if}
@@ -454,7 +454,7 @@
                    if(res=='0'){
               //        // $('.userComment').eq(index).html(content+`<p><strong> ${$('.username').html()}: </strong> ${user_comment}</p>`);
               //        //es6 语法 手机端无法识别
-                     $('.userComment').eq(index).html(comment+"<div class='comment_users'><img class='comment_users_img' src='__STATIC__/{$Request.session.user_img}'/><a class='comment_username'><strong>{$Request.session.user_name}</strong></a><span class='meta' style='position:absolute;margin-top: 11px;margin-left: 75px '><a class='reply_comment' data-toggle='modal'><i class='glyphicon glyphicon-comment'></i> 回复</a></span><time class='meta time' style='position:absolute;margin-top: 35px '><i class='glyphicon glyphicon-time'></i>"+comment_time+"</time><p style='margin-left:20px;margin-top: 15px'>"+user_comment+"</p><div class='reply'><div></br><input class='ipt form-control' type='text' name='comment' required autofocus autocomplete='off' /><input type='button' class='btn btn-primary btn-sm' style='margin-top: 5px' value='回复' /> </div></div></div><div class='reply_wrap'><div class='showReply'></div><div class='reply_content'><div class='line'></div><div class = 'reply_content_list'></div></div></div><div style='border: 1px solid #EAEAEA;transform: scaleY(0.7);'></div>");
+                     $('.userComment').eq(index).html(comment+"<div class='comment_users'><img class='comment_users_img' src='__STATIC__/"+$('.user_img').html()+"'/><a class='comment_username'><strong>"+$('.username').html()+"</strong></a><span class='meta' style='position:absolute;margin-top: 11px;margin-left: 75px '><a class='reply_comment' data-toggle='modal'><i class='glyphicon glyphicon-comment'></i> 回复</a></span><time class='meta time' style='position:absolute;margin-top: 35px '><i class='glyphicon glyphicon-time'></i>"+comment_time+"</time><p style='margin-left:20px;margin-top: 15px'>"+user_comment+"</p><div class='reply'><div></br><input class='ipt form-control' type='text' name='comment' required autofocus autocomplete='off' /><input type='button' class='btn btn-primary btn-sm' style='margin-top: 5px' value='回复' /> </div></div></div><div class='reply_wrap'><div class='showReply'></div><div class='reply_content'><div class='line'></div><div class = 'reply_content_list'></div></div></div><div style='border: 1px solid #EAEAEA;transform: scaleY(0.7);'></div>");
                        $('.commentTimes').eq(index*2).html(Number($('.commentTimes').eq(index*2).html())+1);
                        $('.commentTimes').eq(index*2+1).html(Number($('.commentTimes').eq(index*2+1).html())+1);
                        $('.articleView').eq(index).html(Number($('.articleView').eq(index).html())+1);
@@ -496,10 +496,11 @@
                                       'commentId': commentId,
                                       'replyValue':replyValue
                                     },
+
                                     success:function(res) {
                                         if(res == '0'){
                                               var replyContent = $('.reply_content .reply_content_list').eq(replyIndex).html();
-                                              $('.reply_content .reply_content_list').eq(replyIndex).html("<p><a><strong>{$Request.session.user_name}: </strong></a>"+ replyValue +"</p>"+replyContent);
+                                              $('.reply_content .reply_content_list').eq(replyIndex).html("<p><a><strong>"+$('.username').eq(0).html()+": </strong></a>"+ replyValue +"</p>"+replyContent);
                                               var reply_times = $('.showReply').eq(replyIndex).children('.reply_times').html();
                                               if(reply_times>0){
                                                $('.showReply').eq(replyIndex).find('.reply_times').html(parseInt(reply_times)+1);
@@ -579,7 +580,7 @@
             success:function(res){
                if(res['state']==1){
                 $('.close').click();
-                $('#whetherLogin').html("<h4>欢迎<a style='margin-left: 15px' href='{:url('userInfo/index')}' class='login'>"+res['user_name']+"<img class='head' src='__STATIC__/"+res['user_img']+"'></a><a style='margin-left: 15px' class='login' id='loginOut'> 退出</a></h4><a class='username' hidden>"+res['user_name']+"</a>");
+                $('#whetherLogin').html("<h4>欢迎<a style='margin-left: 15px' href='{:url('userInfo/index')}' class='login'>"+res['user_name']+"<img class='head' src='__STATIC__/"+res['user_img']+"'></a><a style='margin-left: 15px' class='login' id='loginOut'> 退出</a></h4><a class='username' hidden>"+res['user_name']+"</a><a class='user_img' hidden>"+res['user_img']+"</a>");
                  if($('#modalHide')){
                    $('#modalHide').attr('href','');
                  }
@@ -621,7 +622,7 @@
                 // console.log(res);
                  if(res['state']==1){
                   $('.close').click();
-                  $('#whetherLogin').html("<h4>欢迎<a style='margin-left: 15px' href='{:url('userInfo/index')}' class='login'>"+res['user_name']+"<img class='head' src='__STATIC__/"+res['user_img']+"'></a><a style='margin-left: 15px' class='login' id='loginOut'> 退出</a></h4><a class='username' hidden>"+res['user_name']+"</a>");
+                  $('#whetherLogin').html("<h4>欢迎<a style='margin-left: 15px' href='{:url('userInfo/index')}' class='login'>"+res['user_name']+"<img class='head' src='__STATIC__/"+res['user_img']+"'></a><a style='margin-left: 15px' class='login' id='loginOut'> 退出</a></h4><a class='username' hidden>"+res['user_name']+"</a><a class='user_img' hidden>"+res['user_img']+"</a>");
                    if($('#modalHide')){
                      $('#modalHide').attr('href','');
                    }
@@ -718,9 +719,10 @@
                 'replyValue':replyValue
               },
               success:function(res) {
+                 console.log(res);
                   if(res == '0'){
                     var replyContent = $('.reply_content .reply_content_list').eq(replyIndex).html();
-                    $('.reply_content .reply_content_list').eq(replyIndex).html("<p><a><strong>{$Request.session.user_name}: </strong></a>"+ replyValue +"</p>"+replyContent);
+                    $('.reply_content .reply_content_list').eq(replyIndex).html("<p><a><strong>"+$('.username').eq(0).html()+": </strong></a>"+ replyValue +"</p>"+replyContent);
                     var reply_times = $('.showReply').eq(replyIndex).children('.reply_times').html();
                     if(reply_times>0){
                      $('.showReply').eq(replyIndex).find('.reply_times').html(parseInt(reply_times)+1);
