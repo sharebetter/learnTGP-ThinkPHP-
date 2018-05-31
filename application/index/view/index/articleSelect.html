@@ -3,12 +3,12 @@
   <div class="title">
       <h3>最新发布</h3>
       <div class="more"><a href="">PHP</a><a href="">JavaScript</a><a href="">EmpireCMS</a><a href="">Apache</a><a href="">MySQL</a></div>
-  </div> 
+  </div>
 {volist name="articleSelectArr" id="value"}
         <article class="excerpt excerpt-1"><a class="focus" href="{:url('UserInfo/otherInfo')}?otherUserid={$value.user_id}"><img class="thumb" src="__STATIC__/{$value['img']}" alt="">{$value['username']}</a>
           <header>
-            <a class='cat' href="{:url('indexClass')}?bannerId={$value.banner_id}">{$value.name}<i></i></a>
-            <h2><a href="{:url('indexReadMore')}?articleId={$value.id}" title=''>{$value.title}</a></h2>
+            <a class='cat' href="{:url('index/indexClass')}?bannerId={$value.banner_id}">{$value.name}<i></i></a>
+            <h2><a href="{:url('index/indexReadMore')}?articleId={$value.id}" title=''>{$value.title}</a></h2>
           </header>
           <p class="meta">
             <time class="time"><i class="glyphicon glyphicon-time"></i>{$value['time']|date="Y-m-d H:i:s",###}</time></br></br>
@@ -17,7 +17,7 @@
             <a class="cat" href="javascript:">正文<i></i></a>
             <a class="img-responsive">{$value.content|htmlspecialchars_decode|mb_substr=0,3000,'utf-8'}</a>
             <p class="note">
-              <a style='float:right;margin-right:70px' href="{:url('indexReadMore',['articleId'=>$value.id])}">查看更多>></a></p>
+              <a style='float:right;margin-right:70px' href="{:url('index/indexReadMore',['articleId'=>$value.id])}">查看更多>></a></p>
             <a class="cat" href="javascript:" style="margin-top: 15px">用户评论：<i></i><i class="glyphicon glyphicon-comment"></i><span class="commentTimes">{$value.comment_times}</span></a><span class='meta user_comment' style='margin-left: 10%;font-size: 14px'><a class="comment" data-toggle='modal'><i class="glyphicon glyphicon-comment"></i>点击评论</a></span>
                <span class='userComment'>
                 {volist name="commentArr" id="val"}
@@ -26,17 +26,17 @@
                         <img class="comment_users_img" src="__STATIC__/{$val['img']}"/><a class="comment_username"><strong>{$val['username']}</strong></a>
                         <span class='meta' style="position:absolute;margin-top: 11px;margin-left: 75px "><a class="reply_comment" data-toggle='modal'><i class="glyphicon glyphicon-comment"></i> 回复</a></span>
                         <time class="meta time" style="position:absolute;margin-top: 35px "><i class="glyphicon glyphicon-time"></i>{$val['comment_time']|date="Y-m-d H:i:s",###}</time>
-                        <p style="margin-left:20px;margin-top: 15px">{$val['user_comment']}</p>                    
+                        <p style="margin-left:20px;margin-top: 15px">{$val['user_comment']}</p>
                         <div class="reply">
-                          <div></br>              
+                          <div></br>
                             <input class="ipt form-control" type="text" name="comment" required autofocus autocomplete="off" />
                             <input type="hidden" name="comment_id" value="{$val.id}"/>
-                            <input type="button" class="btn btn-primary btn-sm" style="margin-top: 5px" value="回复" /> 
+                            <input type="button" class="btn btn-primary btn-sm" style="margin-top: 5px" value="回复" />
                           </div>
                         </div>
                       </div>
-                      <!-- 用户回复： -->                     
-                      <div class="reply_wrap">                                                
+                      <!-- 用户回复： -->
+                      <div class="reply_wrap">
                          <div class="showReply">
                           {if condition="$val.reply_times>0"}
                           一共有<span class="reply_times">{$val.reply_times}</span>条回复，<a>点击展开</a>
@@ -45,24 +45,24 @@
                         <div class="reply_content">
                           <div class="line"></div>
                             <div class = "reply_content_list">
-                              {volist name="replyArr" id="reply"}               
+                              {volist name="replyArr" id="reply"}
                                  {if condition="$reply.comment_id == $val.id"}
                                     <p><a><strong>{$reply['username']}: </strong></a> {$reply['reply_content']}</p>
                                  {/if}
                               {/volist}
                             </div>
-                        </div>                      
+                        </div>
                       </div>
-                     <div style="border: 1px solid #EAEAEA;transform: scaleY(0.7);"></div>                    
+                     <div style="border: 1px solid #EAEAEA;transform: scaleY(0.7);"></div>
                   {/if}
                 {/volist}
                </span>
               <div class="said">
-                <div></br>              
+                <div></br>
                   <input class="ipt form-control" type="text" name="comment" required autofocus autocomplete="off" />
                   <input type="hidden" name="article_id" value="{$value.id}"/>
-                  <input type="button" class="btn btn-primary" style="margin-top: 5px" value="提交评论" /> 
+                  <input type="button" class="btn btn-primary" style="margin-top: 5px" value="提交评论" />
                 </div>
-              </div>            
+              </div>
         </article>
 {/volist}

@@ -30,6 +30,7 @@ class UserInfo extends Controller
         }
         $collectionInfoArr =[];
         if(strlen($userInfo['article_collection'])>0){
+            $collectionArr = array_reverse($collectionArr);
             // dump($collectionArr);
             foreach ($collectionArr as $key => $val) {
                 if(strlen($val)>0){
